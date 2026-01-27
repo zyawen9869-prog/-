@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>小六壬占卜 App（筛选 + 手动保存 + 历史 + 准确率）</title>
+<style>
+body { font-family: "Helvetica Neue", Arial, sans-serif; margin:0; padding:16px; background:#f0f2f5; }
+h2 { text-align:center; margin-bottom:12px; color:#333; }
+.card { background: #fff; padding: 20px; margin-bottom: 16px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+input, select, button { width:100%; padding: 14px; margin:8px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; font-size:16px; }
+button { background:#4a90e2; color:#fff; border:none; font-weight:bold; cursor:pointer; }
+button:active { background:#357ABD; }
+.result { font-size:20px; font-weight:bold; text-align:center; padding:12px 0; }
+.description { margin-top:8px; font-size:16px; text-align:center; color:#555; }
+.history { font-size:14px; color:#333; margin-top:8px; max-height:300px; overflow-y:auto; }
+.history div { margin-bottom:8px; }
+.delete-btn { font-size:12px; padding:2px 6px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:6px; }
+.delete-btn:active { background:#c0392b; }
+.stats { font-size:14px; color:#222; margin-bottom:8px; padding:8px; background:#eaf2f8; border-radius:8px; }
+@media(max-width:480px){ input, select, button{ font-size:18px; padding:16px; } .result{ font-size:22px; } .description{ font-size:18px; } .history{ font-size:16px; } .stats{ font-size:16px; } }
+</style>
+</head>
+<body>
+
+<h2>📜 小六壬占卜 App（筛选 + 手动保存 + 历史 + 准确率）</h2>
+
+<div id="currentTime" class="card">正在获取当前时间...</div>
+<div id="lunarDateDisplay" class="card">正在获取当前农历...</div>
+
+<div id="result" class="card">
+  <div class="result">正在计算小六壬结果...</div>
+  <div class="description" id="resultDescription"></div>
+  <button onclick="saveCurrentResult()">保存当前测算到历史</button>
+</div>
+
+<div class="card">
+  <h3>随机三数字占卜</h3>
+  <button onclick="randomTripleDivination()">生成三数字起卦</button>
+</div>
+
+<div class="card">
+  <h3>历史记录筛选</h3>
+  <select id="filterMethod" onchange="renderHistory()">
+    <option value="">按占卜类型筛选（全部）</option>
+    <option value="小六壬自动测算">小六壬自动测算</option>
+    <option value="随机三数字起卦">随机三数字起卦</option>
+  </select>
+  <select id="filterGua" onchange="renderHistory()">
+    <option value="">按卦名筛选（全部）</option>
+    <option value="大安">大安</option>
+    <option value="留连">留连</option>
+    <option value="速喜">速喜</option>
+    <option value="赤口">赤口</option>
+    <option value="小吉">小吉</option>
+    <option value="空亡">空亡</option>
+  </select>
+</div>
+
+<div class="card">
+  <h3>历史记录准确率</h3>
+  <div id="accuracy" class="stats">暂无数据</div>
+</div>
+
+<div class="card">
+  <h3>历史记录</h3>
+  <div id="history" class="history">暂无记录</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.2.35/lunar.min.js"></script>
+<script>
+// ===== 六神吉凶详细说明 =====
+const sixShen = [
+  { name:"大安", desc:"属木。数字对应1、4、7。阴主被动。东方。青色（关联物品/服饰）。左腿、肝/木（健康）。吉祥、顺利、安定。地位：高贵，贵人，尊贵，富贵。事务：婚姻、男女之事、婚事、阳宅（住宅风水）。大安为吉宫，主稳定和正面事务。" },
+  { name:"留连", desc:"属水，（阴土），数字对应2、5、8。主玄武，象征事难成、去着未回、口舌是非。状态：拖延、牵连、恋恋不舍、不愿离开。财物：财帛、钱财、沼泽地、阴地、田园。疾病：虚病（如癔症）、邪病（鬼魂冲撞）、慢性病。留连属土，主纠缠和延迟，需注意健康与财务纠纷。阴主被动。南方。暗色（如灰色、深色）（关联物品/服饰）。左臂、胃/土（健康）。" },
+  { name:"速喜", desc:"属火。数字对应3、6、9。阳主主动。南方。红色（关联物品/服饰）。头脑、心/火（健康）。喜庆：喜气、喜悦、喜乐、喜欢。速度：快速、急速、马不停蹄（行动迅速）。性格：聪明、活跃、多智、善辩、多言。速喜属火，主好事来得快，但需防言多必失。" },
+  { name:"赤口", desc:"属金。数字对应1、4、7。阴主被动。西方。白色（关联物品/服饰）。右臂、肺/金（健康）。凶灾：凶事、凶险、损伤、伤残。疾病：急病、重病、伤灾（如意外受伤）。性格：性刚、强悍、好勇、果断、豪爽、但脾气暴躁、行事露骨。赤口属金，主口舌是非与突发灾祸，需谨慎言行。" },
+  { name:"小吉", desc:"属木，（阳土）。数字对应2、5、8。阳主主动。北方。黄色（关联物品/服饰）。右腿、脾/土（健康）。动土：起造，建造，拆迁，修坟等工程。出行：迁移、行走、道路相关。桃花：感情顾恋、情迷意乱、男女交欢、色情。小吉为阳土，主行动和桃花，但需防情感纠葛。" },
+  { name:"空亡", desc:"属土（水）。数字对应3、6、9。阴主被动。黑色（关联物品/服饰）。生殖器、肾/水（健康）。灾难：牢狱之灾、空想、妄想、不现实。损失：遗失、走失、失踪、消失、遗忘。情欲：好色、贪色、迷花恋色。空亡属水，主虚无和损失，需防破财或上当受骗。" }
+];
+
+// ===== 时辰对应表 =====
+const shiChen = [
+  "子时 (23-01)", "丑时 (01-03)", "寅时 (03-05)", "卯时 (05-07)",
+  "辰时 (07-09)", "巳时 (09-11)", "午时 (11-13)", "未时 (13-15)",
+  "申时 (15-17)", "酉时 (17-19)", "戌时 (19-21)", "亥时 (21-23)"
+];
+
+// ===== 当前测算结果缓存 =====
+let lastResult = null;
+
+// ===== 更新当前时间和时辰 =====
+function updateCurrentTime(){
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2,'0');
+  const seconds = now.getSeconds().toString().padStart(2,'0');
+  const hourIndex = Math.floor(hours/2)%12;
+  const shi = shiChen[hourIndex];
+  document.getElementById("currentTime").innerText = 
+    `当前时间：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${hours}:${minutes}:${seconds}  
+时辰段：${shi} （数字${hourIndex}）`;
+}
+
+// ===== 自动小六壬测算（仅显示，不保存） =====
+function autoCalcLiuren(){
+  updateCurrentTime();
+  const now = new Date();
+  const solar = Solar.fromDate(now);
+  const lunarDate = solar.getLunar();
+  const lunarYear  = lunarDate.getYear();
+  const lunarMonth = lunarDate.getMonth();
+  const lunarDay   = lunarDate.getDay();
+  document.getElementById("lunarDateDisplay").innerText =
+    `当前农历：${lunarYear}年 ${lunarMonth}月 ${lunarDay}日`;
+
+  const m = lunarMonth;
+  const d = lunarDay;
+  const h = now.getHours();
+  const monthIndex = (m-1)%6;
+  const dayIndex   = (monthIndex + ((d-1)%6))%6;
+  const hourIndex  = (dayIndex + (Math.floor(h/2)%6))%6;
+  const result = sixShen[hourIndex];
+
+  document.querySelector("#result .result").innerText = `当前小六壬结果：${result.name} 卦`;
+  document.getElementById("resultDescription").innerText = result.desc;
+
+  lastResult = {
+    datetime: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`,
+    lunar: `${lunarMonth}月 ${lunarDay}日`,
+    hourIndex,
+    resultName: result.name,
+    description: result.desc,
+    method: "小六壬自动测算"
+  };
+}
+
+// ===== 手动保存当前测算 =====
+function saveCurrentResult(){
+  if(!lastResult) return alert("没有可保存的测算结果！");
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history.unshift({
+    datetime: lastResult.datetime,
+    lunar: lastResult.lunar,
+    hourIndex: lastResult.hourIndex,
+    result: lastResult.resultName,
+    description: lastResult.description,
+    method: lastResult.method,
+    numbers: [],
+    note: "",
+    actualResult: ""
+  });
+  if(history.length>50) history.pop();
+  localStorage.setItem("liurenHistory", JSON.stringify(history));
+  renderHistory();
+  renderAccuracy();
+  alert("已保存当前测算到历史记录！");
+}
+
+// ===== 随机三数字占卦 =====
+function randomTripleDivination(){
+  const nums = [Math.floor(Math.random()*99)+1, Math.floor(Math.random()*99)+1, Math.floor(Math.random()*99)+1];
+  const index = ((nums[0]+nums[1]+nums[2])%6);
+  const result = sixShen[index];
+  const now = new Date();
+  const note = prompt("请输入你想占卜的事项（可留空）：","");
+  document.querySelector("#result .result").innerText = `随机三数字占卜结果：${result.name} 卦`;
+  document.getElementById("resultDescription").innerText = `数字：${nums.join(', ')} | ${result.desc}`;
+  saveHistory(now, "-", "-", index, result.name, result.desc, "随机三数字起卦", nums, note);
+}
+
+// ===== 历史记录管理 =====
+function saveHistory(dateObj, lunarMonth, lunarDay, hourIndex, resultName, description, method, numbers=[], note=""){
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history.unshift({
+    datetime: `${dateObj.getFullYear()}-${dateObj.getMonth()+1}-${dateObj.getDate()} ${dateObj.getHours()}:${dateObj.getMinutes().toString().padStart(2,'0')}`,
+    lunar: lunarMonth!=="-"?`${lunarMonth}月 ${lunarDay}日`:"-",
+    hourIndex: hourIndex,
+    result: resultName,
+    description: description,
+    method: method,
+    numbers: numbers,
+    note: note,
+    actualResult: ""
+  });
+  if(history.length>50) history.pop();
+  localStorage.setItem("liurenHistory", JSON.stringify(history));
+  renderHistory();
+  renderAccuracy();
+}
+
+// ===== 渲染历史记录（带筛选） =====
+function renderHistory(){
+  const history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  const historyEl = document.getElementById("history");
+  if(history.length===0){ historyEl.innerText = "暂无记录"; return; }
+
+  const methodFilter = document.getElementById("filterMethod").value;
+  const guaFilter = document.getElementById("filterGua").value;
+
+  historyEl.innerHTML = "";
+  history.forEach((item,index)=>{
+    if(methodFilter && item.method!==methodFilter) return;
+    if(guaFilter && item.result!==guaFilter) return;
+    const div = document.createElement("div");
+    div.style.borderBottom = "1px solid #ddd";
+    div.style.padding = "4px 0";
+    div.innerHTML = `
+      <b>${item.datetime}</b> | 方法: ${item.method} | ${item.result} 卦<br>
+      占卜事项: ${item.note || "-"}<br>
+      数字: ${item.numbers.length>0 ? item.numbers.join(', ') : "-"}<br>
+      吉凶说明: ${item.description}<br>
+      实际结果: <input type="text" value="${item.actualResult}" onchange="updateActual(${index}, this.value)">
+      <button class="delete-btn" onclick="deleteHistory(${index})">删除</button>
+    `;
+    historyEl.appendChild(div);
+  });
+  renderAccuracy();
+}
+
+// ===== 历史记录准确率统计（仅显示筛选记录） =====
+function renderAccuracy(){
+  const history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  const methodFilter = document.getElementById("filterMethod").value;
+  const guaFilter = document.getElementById("filterGua").value;
+  let filtered = history.filter(item=>{
+    if(methodFilter && item.method!==methodFilter) return false;
+    if(guaFilter && item.result!==guaFilter) return false;
+    return true;
+  });
+  let totalFilled = 0, hits = 0;
+  filtered.forEach(item=>{
+    if(item.actualResult && item.actualResult.trim()!==""){
+      totalFilled++;
+      if(item.actualResult.includes(item.result)) hits++;
+    }
+  });
+  const accEl = document.getElementById("accuracy");
+  if(totalFilled===0){
+    accEl.innerText = "暂无填写实际结果的数据";
+  } else {
+    const percent = ((hits/totalFilled)*100).toFixed(1);
+    accEl.innerText = `显示记录：${filtered.length} | 已填写实际结果：${totalFilled} | 命中数：${hits} | 准确率：${percent}%`;
+  }
+}
+
+// 更新实际结果
+function updateActual(index, value){
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history[index].actualResult = value;
+  localStorage.setItem("liurenHistory", JSON.stringify(history));
+  renderHistory();
+}
+
+// 删除历史记录
+function deleteHistory(index){
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history.splice(index,1);
+  localStorage.setItem("liurenHistory", JSON.stringify(history));
+  renderHistory();
+}
+
+// 页面加载
+window.onload = function(){
+  autoCalcLiuren();
+  setInterval(autoCalcLiuren, 60*1000);
+  renderHistory();
+};
+</script>
+</body>
+</html>
