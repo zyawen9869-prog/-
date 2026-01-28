@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>小六壬占卜 App（修正版）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小六壬占卜Web</title>
 <style>
 body { font-family: "Helvetica Neue", Arial, sans-serif; margin:0; padding:16px; background:#f0f2f5; }
 h2 { text-align:center; margin-bottom:12px; color:#333; }
@@ -12,18 +12,39 @@ input, select, button { width:100%; padding: 14px; margin:8px 0; border-radius:8
 button { background:#4a90e2; color:#fff; border:none; font-weight:bold; cursor:pointer; }
 button:active { background:#357ABD; }
 .result { font-size:20px; font-weight:bold; text-align:center; padding:12px 0; }
-.description { margin-top:8px; font-size:16px; text-align:center; color:#555; }
+.description { margin-top:8px; font-size:16px; text-align:center; color:#555; white-space:pre-wrap; }
 .history { font-size:14px; color:#333; margin-top:8px; max-height:300px; overflow-y:auto; }
-.history div { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ddd; padding:4px 0; }
-.delete-btn { font-size:12px; padding:2px 6px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:6px; }
+.history div { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #ddd; padding:4px 0; gap:10px; }
+.delete-btn { font-size:12px; padding:2px 6px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:6px; height:fit-content; }
 .delete-btn:active { background:#c0392b; }
 .stats { font-size:14px; color:#222; margin-bottom:8px; padding:8px; background:#eaf2f8; border-radius:8px; }
+.wuxing-help { font-size:14px; cursor:pointer; color:#4a90e2; margin-left:6px; }
 @media(max-width:480px){ input, select, button{ font-size:18px; padding:16px; } .result{ font-size:22px; } .description{ font-size:18px; } .history{ font-size:16px; } .stats{ font-size:16px; } }
 </style>
 </head>
 <body>
 
-<h2>📜 小六壬占卜 App（修正版 + 历史删除按钮）</h2>
+<h2>📜 小六壬占卜 App（最终版）</h2>
+
+<div class="card">
+  <label>请输入占卜问题：
+    <input type="text" id="questionInput" placeholder="请在此输入你想占卜的问题">
+  </label>
+</div>
+
+<div class="card">
+  <label>请选择该事项五行：
+    <select id="wuXingSelect">
+      <option value="">请选择五行</option>
+      <option value="木">木</option>
+      <option value="火">火</option>
+      <option value="土">土</option>
+      <option value="金">金</option>
+      <option value="水">水</option>
+    </select>
+    <span class="wuxing-help" onclick="showWuXingHelp()">?</span>
+  </label>
+</div>
 
 <div id="currentTime" class="card">正在获取当前时间...</div>
 <div id="lunarDateDisplay" class="card">正在获取当前农历...</div>
@@ -31,6 +52,7 @@ button:active { background:#357ABD; }
 <div id="result" class="card">
   <div class="result">正在计算小六壬结果...</div>
   <div class="description" id="resultDescription"></div>
+  <div class="description" id="shengkeHint" style="color:#e67e22;"></div>
   <button onclick="saveCurrentResult()">保存当前测算到历史</button>
 </div>
 
@@ -69,7 +91,7 @@ button:active { background:#357ABD; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.2.35/lunar.min.js"></script>
 <script>
-// ===== 六神吉凶详细说明 =====
+// 六神
 const sixShen = [
   { name:"大安", desc:"属木。数字对应1、4、7。阴主被动。东方。青色（关联物品/服饰）。左腿、肝/木（健康）。吉祥、顺利、安定。地位：高贵，贵人，尊贵，富贵。事务：婚姻、男女之事、婚事、阳宅（住宅风水）。大安为吉宫，主稳定和正面事务。" },
   { name:"留连", desc:"属水，（阴土），数字对应2、5、8。主玄武，象征事难成、去着未回、口舌是非。状态：拖延、牵连、恋恋不舍、不愿离开。财物：财帛、钱财、沼泽地、阴地、田园。疾病：虚病（如癔症）、邪病（鬼魂冲撞）、慢性病。留连属土，主纠缠和延迟，需注意健康与财务纠纷。阴主被动。南方。暗色（如灰色、深色）（关联物品/服饰）。左臂、胃/土（健康）。" },
@@ -79,187 +101,273 @@ const sixShen = [
   { name:"空亡", desc:"属土（水）。数字对应3、6、9。阴主被动。黑色（关联物品/服饰）。生殖器、肾/水（健康）。灾难：牢狱之灾、空想、妄想、不现实。损失：遗失、走失、失踪、消失、遗忘。情欲：好色、贪色、迷花恋色。空亡属水，主虚无和损失，需防破财或上当受骗。" }
 ];
 
-// ===== 时辰对应表 =====
+// 仅用于显示
 const shiChen = ["子时 (23-01)","丑时 (01-03)","寅时 (03-05)","卯时 (05-07)","辰时 (07-09)","巳时 (09-11)","午时 (11-13)","未时 (13-15)","申时 (15-17)","酉时 (17-19)","戌时 (19-21)","亥时 (21-23)"];
 
 let lastResult = null;
 
-// ===== 更新当前时间和时辰（修正数字） =====
+// 五行说明
+function showWuXingHelp(){
+  alert(`五行选择参考说明：
+【方法1：类别/问题类型判断】
+木：生长、学习、文化、创意 → 学习、种植、文学、教育、艺术相关
+火：热情、速度、行动 → 竞赛、工作、恋爱、投资决策、创业
+土：稳重、财产、土地 → 房产、建筑、土地产权、农业、储蓄
+金：权力、工具、交易 → 经济、金钱、科技、金属、管理
+水：流动、交流、智慧 → 旅行、沟通、销售、法律、流动资产
+
+【方法2：按具体事物判断】
+物理属性法：
+金属 → 金
+水、河流、海 → 水
+木、植物 → 木
+火、灯、光 → 火
+土、地、房屋 → 土
+
+象征意义法：
+财、金钱 → 金
+感情 → 火
+家庭 → 土
+学习 → 木
+流动、变化 → 水`);
+}
+
+// ✅ 修复：真实时辰区间 0..11
+function getShiChenIndex(now){
+  const h = now.getHours();
+  if (h === 23 || h === 0) return 0;        // 子
+  if (h >= 1 && h <= 2) return 1;           // 丑
+  if (h >= 3 && h <= 4) return 2;           // 寅
+  if (h >= 5 && h <= 6) return 3;           // 卯
+  if (h >= 7 && h <= 8) return 4;           // 辰
+  if (h >= 9 && h <= 10) return 5;          // 巳
+  if (h >= 11 && h <= 12) return 6;         // 午
+  if (h >= 13 && h <= 14) return 7;         // 未
+  if (h >= 15 && h <= 16) return 8;         // 申
+  if (h >= 17 && h <= 18) return 9;         // 酉
+  if (h >= 19 && h <= 20) return 10;        // 戌
+  return 11;                                 // 亥（21-22）
+}
+
+// 更新时间 + 返回农历/时辰index
 function updateCurrentTime(){
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes().toString().padStart(2,'0');
   const seconds = now.getSeconds().toString().padStart(2,'0');
 
-  const hourIndex = Math.floor(hours/2)%12;
-  const shi = shiChen[hourIndex];
-  const shiNumber = hourIndex + 1; // 修正数字 1-12
+  const shiIndex = getShiChenIndex(now);
+  document.getElementById("currentTime").innerText =
+    `当前时间：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${hours}:${minutes}:${seconds} 时辰：${shiChen[shiIndex]}`;
 
-  document.getElementById("currentTime").innerText = 
-    `当前时间：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${hours}:${minutes}:${seconds}  
-时辰段：${shi} （数字 ${shiNumber}）`;
+  const lunar = Solar.fromDate(now).getLunar();
+  document.getElementById("lunarDateDisplay").innerText =
+    `当前农历：${lunar.getYear()}年 ${lunar.getMonth()}月 ${lunar.getDay()}日`;
+
+  return { now, lunar, shiIndex };
 }
 
-// ===== 自动小六壬测算（修正六神对应） =====
+// 生克关系
+const shengKeMap = { 木:{生:"火",克:"土"}, 火:{生:"土",克:"金"}, 土:{生:"金",克:"水"}, 金:{生:"水",克:"木"}, 水:{生:"木",克:"火"}};
+const liurenWuXingMap = { "大安":"木", "留连":"土", "速喜":"火", "赤口":"金", "小吉":"土", "空亡":"水" };
+
+/** ✅ 升级：详细生克解释 */
+function computeShengKe(wuxing, liuren){
+  if(!wuxing) return "";
+  const lwx = liurenWuXingMap[liuren];
+  if(!lwx) return "";
+
+  const A = wuxing; // 事项五行
+  const B = lwx;    // 卦五行
+
+  const AtoB_sheng = shengKeMap[A] && shengKeMap[A].生 === B;
+  const AtoB_ke    = shengKeMap[A] && shengKeMap[A].克 === B;
+
+  const BtoA_sheng = shengKeMap[B] && shengKeMap[B].生 === A;
+  const BtoA_ke    = shengKeMap[B] && shengKeMap[B].克 === A;
+
+  let relation = "";
+  let explain = "";
+
+  if (A === B) {
+    relation = "同行（同五行）";
+    explain = "事项与卦同气，整体偏中性稳定，关键看卦的吉凶含义与现实行动。";
+  } else if (AtoB_sheng) {
+    relation = `事项五行(${A}) 生 卦五行(${B})`;
+    explain = "你在“出力/供能”给这个卦象，往往代表推动、投入、顺势推进；但也可能表示更费心费力。";
+  } else if (AtoB_ke) {
+    relation = `事项五行(${A}) 克 卦五行(${B})`;
+    explain = "事项对卦形成压制，常见为阻力、冲突、硬碰硬；建议谨慎、留余地，避免强推。";
+  } else if (BtoA_sheng) {
+    relation = `卦五行(${B}) 生 事项五行(${A})`;
+    explain = "卦象对事项有“助力/滋养”，常见为外部条件支持、贵人助力、过程更顺。";
+  } else if (BtoA_ke) {
+    relation = `卦五行(${B}) 克 事项五行(${A})`;
+    explain = "卦象对事项形成“牵制/消耗”，常见为被压制、被约束、进展受限；建议先稳住、再调整策略。";
+  } else {
+    relation = "无直接生克";
+    explain = "五行之间不构成直接生克，生克线索较弱；可更多参考卦本身的吉凶象意与当下现实因素。";
+  }
+
+  return `【五行解释】\n当前卦：${liuren}（五行：${B}）\n事项五行：${A}\n关系：${relation}\n提示：${explain}`;
+}
+
+// ✅ 传统年月日起时法（用农历月日 + 时辰）
 function autoCalcLiuren(){
-  updateCurrentTime();
-  const now = new Date();
-  const solar = Solar.fromDate(now);
-  const lunarDate = solar.getLunar();
-  document.getElementById("lunarDateDisplay").innerText =
-    `当前农历：${lunarDate.getYear()}年 ${lunarDate.getMonth()}月 ${lunarDate.getDay()}日`;
+  const { now, lunar, shiIndex } = updateCurrentTime();
 
-  const h = now.getHours();
-  const monthIndex = (lunarDate.getMonth()-1)%6;
-  const dayIndex   = (monthIndex + ((lunarDate.getDay()-1)%6))%6;
+  const m = lunar.getMonth();
+  const d = lunar.getDay();
 
-  const hourIndexForLiuren = (dayIndex + ((Math.floor(h/2)) % 6)) % 6;
-  const result = sixShen[hourIndexForLiuren];
+  const monthIndex = (m - 1) % 6;
+  const dayIndex = (monthIndex + ((d - 1) % 6)) % 6;
+
+  const hourIndex6 = Math.floor(shiIndex / 2) % 6;
+  const resultIndex = (dayIndex + hourIndex6) % 6;
+
+  const result = sixShen[resultIndex];
 
   document.querySelector("#result .result").innerText = `当前小六壬结果：${result.name} 卦`;
   document.getElementById("resultDescription").innerText = result.desc;
 
+  // ✅ 实时读取下拉框显示生克
+  const wuxingNow = document.getElementById("wuXingSelect").value;
+  document.getElementById("shengkeHint").innerText = wuxingNow ? computeShengKe(wuxingNow, result.name) : "";
+
   lastResult = {
-    datetime: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${h}:${minutes}`,
-    lunar: `${lunarDate.getMonth()}月 ${lunarDate.getDay()}日`,
-    hourIndex: hourIndexForLiuren,
     resultName: result.name,
     description: result.desc,
-    method: "小六壬自动测算"
+    method: "小六壬自动测算",
+    datetime: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
   };
 }
 
-// ===== 保存当前测算 =====
+// 保存
 function saveCurrentResult(){
+  const question = document.getElementById("questionInput").value.trim();
+  const wuXing = document.getElementById("wuXingSelect").value;
   if(!lastResult) return alert("没有可保存的测算结果！");
+  if(!question) return alert("请输入占卜问题！");
+  if(!wuXing) return alert("请选择事项五行！");
+
   let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
-  history.unshift({
-    datetime: lastResult.datetime,
-    lunar: lastResult.lunar,
-    hourIndex: lastResult.hourIndex,
-    result: lastResult.resultName,
-    description: lastResult.description,
-    method: lastResult.method,
-    numbers: [],
-    note: "",
-    actualResult: ""
-  });
+  history.unshift({...lastResult, question, wuXing, numbers:[], note:"", actualResult:""});
   if(history.length>50) history.pop();
-  localStorage.setItem("liurenHistory", JSON.stringify(history));
-  renderHistory();
-  renderAccuracy();
+  localStorage.setItem("liurenHistory",JSON.stringify(history));
+  renderHistory(); renderAccuracy();
   alert("已保存当前测算到历史记录！");
 }
 
-// ===== 历史记录渲染 =====
+// 随机三数字
+function randomTripleDivination(){
+  const nums=[Math.floor(Math.random()*99+1),Math.floor(Math.random()*99+1),Math.floor(Math.random()*99+1)];
+  const index = nums.reduce((a,b)=>a+b)%6;
+  const result = sixShen[index];
+  const now = new Date();
+  const note = prompt("请输入你想占卜的事项（可留空）：","");
+
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history.unshift({
+    datetime:`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+    lunar:"-",
+    hourIndex:index,
+    result:result.name,
+    description:result.desc,
+    method:"随机三数字起卦",
+    numbers:nums,
+    question:note,
+    wuXing:"",
+    note,
+    actualResult:""
+  });
+  if(history.length>50) history.pop();
+  localStorage.setItem("liurenHistory",JSON.stringify(history));
+
+  document.querySelector("#result .result").innerText = `随机三数字占卜结果：${result.name} 卦`;
+  document.getElementById("resultDescription").innerText = `数字：${nums.join(', ')} | ${result.desc}`;
+  document.getElementById("shengkeHint").innerText = ""; // 随机起卦不强制生克提示
+
+  renderHistory(); renderAccuracy();
+}
+
+// 历史记录
 function deleteHistoryItem(index){
   let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
   history.splice(index,1);
-  localStorage.setItem("liurenHistory", JSON.stringify(history));
+  localStorage.setItem("liurenHistory",JSON.stringify(history));
+  renderHistory(); renderAccuracy();
+}
+function updateActual(index,value){
+  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  history[index].actualResult=value;
+  localStorage.setItem("liurenHistory",JSON.stringify(history));
   renderHistory();
 }
-
 function renderHistory(){
   const history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
-  const historyEl = document.getElementById("history");
-  if(history.length===0){ historyEl.innerText = "暂无记录"; return; }
-
   const methodFilter = document.getElementById("filterMethod").value;
   const guaFilter = document.getElementById("filterGua").value;
+  const historyEl=document.getElementById("history");
 
-  historyEl.innerHTML = "";
+  if(history.length===0){historyEl.innerText="暂无记录";return;}
+  historyEl.innerHTML="";
+
   history.forEach((item,index)=>{
     if(methodFilter && item.method!==methodFilter) return;
     if(guaFilter && item.result!==guaFilter) return;
-    const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.borderBottom = "1px solid #ddd";
-    div.style.padding = "4px 0";
 
-    div.innerHTML = `
+    const div=document.createElement("div");
+    div.innerHTML=`
       <div>
         <b>${item.datetime}</b> | 方法: ${item.method} | ${item.result} 卦<br>
-        占卜事项: ${item.note || "-"}<br>
+        占卜事项: ${item.question || "-"} | 五行: ${item.wuXing || "-"}<br>
         数字: ${item.numbers.length>0 ? item.numbers.join(', ') : "-"}<br>
-        吉凶说明: ${item.description}<br>
+        结果说明: ${item.description}<br>
         实际结果: <input type="text" value="${item.actualResult}" onchange="updateActual(${index}, this.value)">
       </div>
       <button class="delete-btn" onclick="deleteHistoryItem(${index})">删除</button>
     `;
     historyEl.appendChild(div);
   });
-  renderAccuracy();
 }
 
-// ===== 更新实际结果 =====
-function updateActual(index, value){
-  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
-  history[index].actualResult = value;
-  localStorage.setItem("liurenHistory", JSON.stringify(history));
-  renderHistory();
-}
-
-// ===== 随机三数字占卦 =====
-function randomTripleDivination(){
-  const nums = [Math.floor(Math.random()*99)+1, Math.floor(Math.random()*99)+1, Math.floor(Math.random()*99)+1];
-  const index = ((nums[0]+nums[1]+nums[2])%6);
-  const result = sixShen[index];
-  const now = new Date();
-  const note = prompt("请输入你想占卜的事项（可留空）：","");
-  document.querySelector("#result .result").innerText = `随机三数字占卜结果：${result.name} 卦`;
-  document.getElementById("resultDescription").innerText = `数字：${nums.join(', ')} | ${result.desc}`;
-  let history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
-  history.unshift({
-    datetime: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`,
-    lunar: "-",
-    hourIndex: index,
-    result: result.name,
-    description: result.desc,
-    method: "随机三数字起卦",
-    numbers: nums,
-    note: note,
-    actualResult: ""
-  });
-  if(history.length>50) history.pop();
-  localStorage.setItem("liurenHistory", JSON.stringify(history));
-  renderHistory();
-  renderAccuracy();
-}
-
-// ===== 历史记录准确率 =====
+// 准确率
 function renderAccuracy(){
-  const history = JSON.parse(localStorage.getItem("liurenHistory")||"[]");
-  const methodFilter = document.getElementById("filterMethod").value;
-  const guaFilter = document.getElementById("filterGua").value;
-  let filtered = history.filter(item=>{
+  const history=JSON.parse(localStorage.getItem("liurenHistory")||"[]");
+  const methodFilter=document.getElementById("filterMethod").value;
+  const guaFilter=document.getElementById("filterGua").value;
+
+  let filtered=history.filter(item=>{
     if(methodFilter && item.method!==methodFilter) return false;
     if(guaFilter && item.result!==guaFilter) return false;
     return true;
   });
-  let totalFilled = 0, hits = 0;
+
+  let totalFilled=0,hits=0;
   filtered.forEach(item=>{
     if(item.actualResult && item.actualResult.trim()!==""){
       totalFilled++;
       if(item.actualResult.includes(item.result)) hits++;
     }
   });
-  const accEl = document.getElementById("accuracy");
-  if(totalFilled===0){
-    accEl.innerText = "暂无填写实际结果的数据";
-  } else {
-    const percent = ((hits/totalFilled)*100).toFixed(1);
-    accEl.innerText = `显示记录：${filtered.length} | 已填写实际结果：${totalFilled} | 命中数：${hits} | 准确率：${percent}%`;
-  }
+
+  document.getElementById("accuracy").innerText =
+    totalFilled===0 ? "暂无填写实际结果的数据"
+    : `准确率：${Math.round(hits/totalFilled*100)}% (${hits}/${totalFilled})`;
 }
 
-// ===== 页面加载 =====
-window.onload = function(){
-  autoCalcLiuren();
-  setInterval(autoCalcLiuren, 60*1000);
-  renderHistory();
-};
+// ✅ 选择五行后立即刷新生克提示
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("wuXingSelect").addEventListener("change", ()=>{
+    autoCalcLiuren();
+  });
+});
+
+// 初始化：先算一次，再每分钟更新结果；时间每秒更新显示
+updateCurrentTime();
+autoCalcLiuren();
+setInterval(updateCurrentTime, 1000);
+setInterval(autoCalcLiuren, 60*1000);
 </script>
 </body>
 </html>
