@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小六壬占卜Web</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>小六壬占卜</title>
 <style>
-body { font-family: "Helvetica Neue", Arial, sans-serif; margin:0; padding:16px; background:#f0f2f5; }
-h2 { text-align:center; margin-bottom:12px; color:#333; }
-.card { background: #fff; padding: 20px; margin-bottom: 16px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-input, select, button { width:100%; padding: 14px; margin:8px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; font-size:16px; }
-button { background:#4a90e2; color:#fff; border:none; font-weight:bold; cursor:pointer; }
-button:active { background:#357ABD; }
-.result { font-size:20px; font-weight:bold; text-align:center; padding:12px 0; }
-.description { margin-top:8px; font-size:16px; text-align:center; color:#555; white-space:pre-wrap; }
-.history { font-size:14px; color:#333; margin-top:8px; max-height:300px; overflow-y:auto; }
-.history div { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #ddd; padding:4px 0; gap:10px; }
-.delete-btn { font-size:12px; padding:2px 6px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:6px; height:fit-content; }
-.delete-btn:active { background:#c0392b; }
-.stats { font-size:14px; color:#222; margin-bottom:8px; padding:8px; background:#eaf2f8; border-radius:8px; }
-.wuxing-help { font-size:14px; cursor:pointer; color:#4a90e2; margin-left:6px; }
-@media(max-width:480px){ input, select, button{ font-size:18px; padding:16px; } .result{ font-size:22px; } .description{ font-size:18px; } .history{ font-size:16px; } .stats{ font-size:16px; } }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; margin:0; padding:16px; background:#f0f2f5; }
+  h2 { text-align:center; margin-bottom:12px; color:#333; }
+  .card { background: #fff; padding: 20px; margin-bottom: 16px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+  input, select, button { width:100%; padding: 14px; margin:8px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; font-size:16px; }
+  button { background:#4a90e2; color:#fff; border:none; font-weight:bold; cursor:pointer; }
+  button:active { background:#357ABD; }
+  .result { font-size:20px; font-weight:bold; text-align:center; padding:12px 0; }
+  .description { margin-top:8px; font-size:16px; text-align:center; color:#555; white-space:pre-wrap; }
+  .history { font-size:14px; color:#333; margin-top:8px; max-height:300px; overflow-y:auto; }
+  .history div { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #ddd; padding:4px 0; gap:10px; }
+  .delete-btn { font-size:12px; padding:2px 6px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; margin-left:6px; height:fit-content; }
+  .delete-btn:active { background:#c0392b; }
+  .stats { font-size:14px; color:#222; margin-bottom:8px; padding:8px; background:#eaf2f8; border-radius:8px; }
+  .wuxing-help { font-size:14px; cursor:pointer; color:#4a90e2; margin-left:6px; }
+  @media(max-width:480px){
+    input, select, button{ font-size:18px; padding:16px; }
+    .result{ font-size:22px; }
+    .description{ font-size:18px; }
+    .history{ font-size:16px; }
+    .stats{ font-size:16px; }
+  }
 </style>
 </head>
-<body>
 
-<h2>📜 小六壬占卜 App（最终版）</h2>
+<body>
+<h2>📜 小六壬占卜 </h2>
 
 <div class="card">
   <label>请输入占卜问题：
-    <input type="text" id="questionInput" placeholder="请在此输入你想占卜的问题">
+    <input type="text" id="questionInput" placeholder="请在此输入你想占卜的问题" />
   </label>
 </div>
 
@@ -54,6 +60,12 @@ button:active { background:#357ABD; }
   <div class="description" id="resultDescription"></div>
   <div class="description" id="shengkeHint" style="color:#e67e22;"></div>
   <button onclick="saveCurrentResult()">保存当前测算到历史</button>
+</div>
+
+<!-- ✅ 调试显示（默认开启，可在JS里 DEBUG_MODE 控制） -->
+<div class="card" id="debugCard" style="display:none;">
+  <h3 style="margin:0 0 8px 0;">🛠 调试信息</h3>
+  <div id="debugInfo" class="description" style="text-align:left;"></div>
 </div>
 
 <div class="card">
@@ -91,6 +103,11 @@ button:active { background:#357ABD; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.2.35/lunar.min.js"></script>
 <script>
+// ==========================
+// ✅ 调试开关：想隐藏就改 false
+// ==========================
+let DEBUG_MODE = true;
+
 // 六神
 const sixShen = [
   { name:"大安", desc:"属木，生发、稳定。数字对应1、4、7。阴主被动。东方。青色（关联物品/服饰）。左腿、肝/木（健康）。吉祥、顺利、安定。地位：高贵，贵人，尊贵，富贵。事务：婚姻、男女之事、婚事、阳宅（住宅风水）。大安为吉宫，主稳定和正面事务。" },
@@ -102,7 +119,10 @@ const sixShen = [
 ];
 
 // 仅用于显示
-const shiChen = ["子时 (23-01)","丑时 (01-03)","寅时 (03-05)","卯时 (05-07)","辰时 (07-09)","巳时 (09-11)","午时 (11-13)","未时 (13-15)","申时 (15-17)","酉时 (17-19)","戌时 (19-21)","亥时 (21-23)"];
+const shiChen = [
+  "子时 (23-01)","丑时 (01-03)","寅时 (03-05)","卯时 (05-07)","辰时 (07-09)","巳时 (09-11)",
+  "午时 (11-13)","未时 (13-15)","申时 (15-17)","酉时 (17-19)","戌时 (19-21)","亥时 (21-23)"
+];
 
 let lastResult = null;
 
@@ -132,46 +152,39 @@ function showWuXingHelp(){
 流动、变化 → 水`);
 }
 
-// ✅ 修复：真实时辰区间 0..11
-function getShiChenIndex(now){
+// ==========================
+// ✅ B方案：子=1 丑=2 ... 亥=12
+// ==========================
+function getShiChenNumber(now){
   const h = now.getHours();
-  if (h === 23 || h === 0) return 0;        // 子
-  if (h >= 1 && h <= 2) return 1;           // 丑
-  if (h >= 3 && h <= 4) return 2;           // 寅
-  if (h >= 5 && h <= 6) return 3;           // 卯
-  if (h >= 7 && h <= 8) return 4;           // 辰
-  if (h >= 9 && h <= 10) return 5;          // 巳
-  if (h >= 11 && h <= 12) return 6;         // 午
-  if (h >= 13 && h <= 14) return 7;         // 未
-  if (h >= 15 && h <= 16) return 8;         // 申
-  if (h >= 17 && h <= 18) return 9;         // 酉
-  if (h >= 19 && h <= 20) return 10;        // 戌
-  return 11;                                 // 亥（21-22）
+  if (h === 23 || h === 0) return 1; // 子时 23-01
+  return Math.floor((h + 1) / 2) + 1; // 01-02丑=2 ... 21-22亥=12
 }
 
-// 更新时间 + 返回农历/时辰index
+// 更新时间 + 返回农历/时辰序号
 function updateCurrentTime(){
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes().toString().padStart(2,'0');
   const seconds = now.getSeconds().toString().padStart(2,'0');
 
-  const shiIndex = getShiChenIndex(now);
+  const shiNum = getShiChenNumber(now); // ✅ 1..12
+
   document.getElementById("currentTime").innerText =
-    `当前时间：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${hours}:${minutes}:${seconds} 时辰：${shiChen[shiIndex]}`;
+    `当前时间：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${hours}:${minutes}:${seconds} 时辰：${shiChen[shiNum-1]}`;
 
   const lunar = Solar.fromDate(now).getLunar();
   document.getElementById("lunarDateDisplay").innerText =
     `当前农历：${lunar.getYear()}年 ${lunar.getMonth()}月 ${lunar.getDay()}日`;
 
-  return { now, lunar, shiIndex };
+  return { now, lunar, shiNum };
 }
 
 // 生克关系
 const shengKeMap = { 木:{生:"火",克:"土"}, 火:{生:"土",克:"金"}, 土:{生:"金",克:"水"}, 金:{生:"水",克:"木"}, 水:{生:"木",克:"火"}};
 const liurenWuXingMap = { "大安":"木", "留连":"土", "速喜":"火", "赤口":"金", "小吉":"土", "空亡":"水" };
 
-/** ✅ 升级：详细生克解释 */
+/** ✅ 详细生克解释 */
 function computeShengKe(wuxing, liuren){
   if(!wuxing) return "";
   const lwx = liurenWuXingMap[liuren];
@@ -212,20 +225,23 @@ function computeShengKe(wuxing, liuren){
   return `【五行解释】\n当前卦：${liuren}（五行：${B}）\n事项五行：${A}\n关系：${relation}\n提示：${explain}`;
 }
 
-// ✅ 传统年月日起时法（用农历月日 + 时辰）
+// ✅ 传统：月上起日，日上起时（子=1..亥=12）
 function autoCalcLiuren(){
-  const { now, lunar, shiIndex } = updateCurrentTime();
+  const { now, lunar, shiNum } = updateCurrentTime();
 
-  const m = lunar.getMonth();
-  const d = lunar.getDay();
+  const m = lunar.getMonth(); // 1..12
+  const d = lunar.getDay();   // 1..30
 
+  // 1) 月落宫：从大安起数到月
   const monthIndex = (m - 1) % 6;
-  const dayIndex = (monthIndex + ((d - 1) % 6)) % 6;
 
-  const hourIndex6 = Math.floor(shiIndex / 2) % 6;
-  const resultIndex = (dayIndex + hourIndex6) % 6;
+  // 2) 月上起日：从月落宫起数到日
+  const dayIndex = (monthIndex + (d - 1)) % 6;
 
-  const result = sixShen[resultIndex];
+  // 3) 日上起时：从日落宫起数到时（子=1..12）
+  const hourIndex = (dayIndex + (shiNum - 1)) % 6;
+
+  const result = sixShen[hourIndex];
 
   document.querySelector("#result .result").innerText = `当前小六壬结果：${result.name} 卦`;
   document.getElementById("resultDescription").innerText = result.desc;
@@ -234,12 +250,34 @@ function autoCalcLiuren(){
   const wuxingNow = document.getElementById("wuXingSelect").value;
   document.getElementById("shengkeHint").innerText = wuxingNow ? computeShengKe(wuxingNow, result.name) : "";
 
+  // ✅ 修复：历史字段统一用 result（兼容你原来的 renderHistory/renderAccuracy）
   lastResult = {
-    resultName: result.name,
+    result: result.name,
     description: result.desc,
     method: "小六壬自动测算",
     datetime: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
   };
+
+  // ✅ 占卜过程
+  const debugCard = document.getElementById("debugCard");
+  const debugInfo = document.getElementById("debugInfo");
+  if (DEBUG_MODE && debugCard && debugInfo) {
+    debugCard.style.display = "block";
+    const shiText = shiChen[shiNum - 1];
+    debugInfo.innerText =
+`公历：${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}
+农历：${lunar.getYear()}年 ${m}月 ${d}日
+时辰：${shiText}（序号=${shiNum}，子=1...亥=12）
+
+【三步起数】
+1) 月落宫：index=${monthIndex} → ${sixShen[monthIndex].name}
+2) 月上起日：index=${dayIndex} → ${sixShen[dayIndex].name}
+3) 日上起时：index=${hourIndex} → ${sixShen[hourIndex].name}
+
+最终卦：${result.name}`;
+  } else if (debugCard) {
+    debugCard.style.display = "none";
+  }
 }
 
 // 保存
@@ -270,6 +308,7 @@ function randomTripleDivination(){
   history.unshift({
     datetime:`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
     lunar:"-",
+    // 保留你原字段（不删除function/结构），但这里表示的是卦序号
     hourIndex:index,
     result:result.name,
     description:result.desc,
@@ -314,16 +353,19 @@ function renderHistory(){
 
   history.forEach((item,index)=>{
     if(methodFilter && item.method!==methodFilter) return;
-    if(guaFilter && item.result!==guaFilter) return;
+
+    // ✅ 兼容旧数据：resultName / result
+    const gua = item.result || item.resultName || "";
+    if(guaFilter && gua!==guaFilter) return;
 
     const div=document.createElement("div");
     div.innerHTML=`
       <div>
-        <b>${item.datetime}</b> | 方法: ${item.method} | ${item.result} 卦<br>
+        <b>${item.datetime}</b> | 方法: ${item.method} | ${gua} 卦<br>
         占卜事项: ${item.question || "-"} | 五行: ${item.wuXing || "-"}<br>
-        数字: ${item.numbers.length>0 ? item.numbers.join(', ') : "-"}<br>
+        数字: ${item.numbers && item.numbers.length>0 ? item.numbers.join(', ') : "-"}<br>
         结果说明: ${item.description}<br>
-        实际结果: <input type="text" value="${item.actualResult}" onchange="updateActual(${index}, this.value)">
+        实际结果: <input type="text" value="${item.actualResult || ""}" onchange="updateActual(${index}, this.value)">
       </div>
       <button class="delete-btn" onclick="deleteHistoryItem(${index})">删除</button>
     `;
@@ -339,15 +381,17 @@ function renderAccuracy(){
 
   let filtered=history.filter(item=>{
     if(methodFilter && item.method!==methodFilter) return false;
-    if(guaFilter && item.result!==guaFilter) return false;
+    const gua = item.result || item.resultName || "";
+    if(guaFilter && gua!==guaFilter) return false;
     return true;
   });
 
   let totalFilled=0,hits=0;
   filtered.forEach(item=>{
+    const gua = item.result || item.resultName || "";
     if(item.actualResult && item.actualResult.trim()!==""){
       totalFilled++;
-      if(item.actualResult.includes(item.result)) hits++;
+      if(item.actualResult.includes(gua)) hits++;
     }
   });
 
@@ -356,7 +400,7 @@ function renderAccuracy(){
     : `准确率：${Math.round(hits/totalFilled*100)}% (${hits}/${totalFilled})`;
 }
 
-// ✅ 选择五行后立即刷新生克提示
+// ✅ 选择五行后立即刷新生克提示（保留你的行为：触发重新计算）
 document.addEventListener("DOMContentLoaded", ()=>{
   document.getElementById("wuXingSelect").addEventListener("change", ()=>{
     autoCalcLiuren();
@@ -371,4 +415,3 @@ setInterval(autoCalcLiuren, 60*1000);
 </script>
 </body>
 </html>
-
