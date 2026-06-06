@@ -1,0 +1,863 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>个人助手 V1 原型</title>
+  <style>
+    :root{--bg:#f5f7f8;--panel:#fff;--text:#182026;--muted:#66717a;--line:#dce3e7;--green:#22745b;--blue:#316f9f;--gold:#b07819;--red:#b94a48;--ink:#26333b;--soft-green:#e7f2ed;--soft-blue:#e7f0f7;--soft-gold:#f7efe0;--soft-red:#f8e9e8;font-family:"Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}.app{min-height:100vh;display:grid;grid-template-columns:240px minmax(0,1fr)}aside{background:#17242c;color:#f4f7f8;padding:24px 18px;display:flex;flex-direction:column;gap:24px}.brand{display:flex;align-items:center;gap:12px;padding:0 6px}.mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#7cb49f,#e0b15a);display:grid;place-items:center;color:#152027;font-weight:800}.brand strong{display:block;font-size:16px}.brand span{color:#b8c4ca;font-size:12px}nav{display:grid;gap:6px}.nav-item{border:0;background:transparent;color:#cbd6db;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer;text-align:left;font-size:14px}.nav-item.active{background:#24353f;color:#fff}.sidebar-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:16px 6px 0;color:#afbdc4;font-size:12px;line-height:1.7}main{min-width:0;padding:26px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}h1{font-size:24px;line-height:1.2;margin:0 0 6px;letter-spacing:0}.sub{color:var(--muted);margin:0;font-size:14px}.quick{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}button.primary,button.secondary{border:1px solid transparent;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;white-space:nowrap}button.primary{background:var(--ink);color:white}button.secondary{background:white;color:var(--ink);border-color:var(--line)}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}.clock-screen{position:relative;overflow:hidden;border-radius:14px;padding:22px;background:linear-gradient(135deg,rgba(32,36,33,.94),rgba(63,93,82,.9)),url("");color:#fff;box-shadow:0 24px 50px rgba(31,42,39,.22)}.clock-screen:before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(240,210,124,.22),transparent 32%);transform:translate(35%,-15%)}.clock-content{position:relative;z-index:1}.clock-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.clock-title span{font-size:12px;color:rgba(255,255,255,.72);font-weight:700}.clock-times{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.clock-box{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);border-radius:12px;padding:14px}.clock-box span{display:block;font-size:13px;color:rgba(255,255,255,.82);font-weight:800}.clock-box strong{display:block;margin-top:6px;font-size:34px;letter-spacing:.5px}.clock-box small{display:block;margin-top:5px;color:rgba(255,255,255,.68)}.clock-actions{display:flex;gap:8px;flex-wrap:wrap}.todo-actions{display:flex;gap:8px;align-items:center}.fx-card{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:10px}.fx-main,.fx-mini{border:1px solid rgba(104,91,70,.14);border-radius:10px;background:rgba(255,255,255,.74);padding:12px}.fx-main span,.fx-mini span{display:block;color:var(--muted);font-size:12px}.fx-main strong{display:block;margin-top:5px;font-size:24px}.fx-mini strong{display:block;margin-top:5px;font-size:17px;color:var(--ink)}@media (max-width:920px){.clock-times,.fx-card{grid-template-columns:1fr}.clock-box strong{font-size:28px}}.dual-time{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}.time-box{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:12px}.time-box.primary-time{border-color:#8b6fd8;background:#f3efff}.time-box span{display:block;color:var(--muted);font-size:12px}.time-box strong{display:block;margin-top:4px;font-size:24px}.today-alert{border:1px solid var(--red);background:var(--soft-red);color:var(--red);border-radius:8px;padding:12px;font-weight:800}.today-source{display:inline-block;margin-top:4px;color:var(--muted);font-size:12px;font-weight:400}@media (max-width:920px){.dual-time{grid-template-columns:1fr}}.time-panel{display:flex;justify-content:space-between;gap:16px;align-items:center}.time-main{font-size:28px;font-weight:800;color:var(--ink)}.time-date{display:grid;gap:3px}.time-date strong{font-size:16px}.time-date small{color:var(--muted);font-size:12px}.layout-note{border:1px dashed #8b6fd8;background:#f3efff;border-radius:8px;padding:12px;color:#3b257c;font-size:13px}.edit-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.drag-handle{color:var(--muted);font-size:12px}.asset-year-card.current-red{border-color:var(--red);background:var(--soft-red)}@media (max-width:920px){.time-panel{align-items:flex-start;flex-direction:column}.time-main{font-size:24px}}.metric{display:grid;gap:7px}.metric span{color:var(--muted);font-size:13px}.metric strong{font-size:24px;letter-spacing:0}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-head h2{font-size:16px;margin:0;letter-spacing:0}.chip{border-radius:999px;padding:4px 9px;font-size:12px;color:var(--muted);background:#eef2f4}.list{display:grid;gap:10px}.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}.time{min-width:48px;font-size:12px;color:var(--blue);font-weight:700}.row strong{display:block;font-size:14px;margin-bottom:2px}.row small{color:var(--muted);font-size:12px}.tag{border-radius:6px;padding:4px 7px;font-size:12px;white-space:nowrap}.tag.green{background:var(--soft-green);color:var(--green)}.tag.blue{background:var(--soft-blue);color:var(--blue)}.tag.gold{background:var(--soft-gold);color:var(--gold)}.tag.red{background:var(--soft-red);color:var(--red)}.life-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.life-weekday{color:var(--muted);text-align:center;font-size:12px;font-weight:700;padding:4px}.life-day{min-height:138px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:8px;display:flex;flex-direction:column;gap:6px}.life-day.today{border:2px solid #8b6fd8;background:#f3efff}.life-day.au-holiday{background:#fff8e8;border-color:#d8aa4a}.life-day.cn-holiday{background:#f8e9e8;border-color:#d98985}.life-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.life-date{font-weight:800}.lunar{color:var(--muted);font-size:11px;white-space:nowrap}.event-chip{border-radius:6px;padding:4px 6px;font-size:11px;line-height:1.25;font-weight:700}.event-chip.au{background:var(--soft-gold);color:var(--gold)}.event-chip.cn{background:var(--soft-red);color:var(--red)}.event-chip.work{background:var(--soft-blue);color:var(--blue)}.event-chip.life{background:var(--soft-green);color:var(--green)}.event-chip.project{background:#efe8ff;color:#5a45a1}.event-chip.note{background:#eef2f4;color:var(--ink)}.calendar-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.legend{display:flex;gap:8px;flex-wrap:wrap}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}@media (max-width:920px){.life-calendar{grid-template-columns:1fr}.life-weekday{display:none}.life-day{min-height:auto}.calendar-tools{grid-template-columns:1fr}}.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.day,.weekday{min-height:56px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fbfcfd;font-size:13px}.weekday{min-height:auto;background:transparent;border:0;color:var(--muted);text-align:center}.day.active{border-color:#70a88f;background:var(--soft-green);font-weight:700}.form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:10px 11px;font:inherit;background:white;width:100%;min-width:0}textarea{min-height:94px;resize:vertical}.memo-hero{grid-column:span 12;background:linear-gradient(135deg,#f3efff,#eef8f4);border:1px solid #d9d0f4;border-radius:8px;padding:18px;display:flex;justify-content:space-between;gap:16px;align-items:center}.memo-hero h2{margin:0 0 6px;font-size:20px}.memo-hero p{margin:0;color:var(--muted);font-size:13px}.vault-section,.category-detail,.category-card{box-shadow:0 8px 18px rgba(24,32,38,.04)}.vault-section h3{display:flex;align-items:center;gap:8px}.vault-section h3:before{content:"";width:8px;height:8px;border-radius:50%;background:#8b6fd8}.category-card h3{color:var(--ink)}.memo-note-input{border:1px solid var(--line);border-radius:6px;padding:7px 8px;font:inherit;width:100%;min-width:150px;background:white}.info-vault{display:grid;gap:12px}.vault-section{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:12px}.vault-section h3{margin:0 0 10px;font-size:14px}.vault-table td,.vault-table th{white-space:normal}.expiry-soon{color:var(--red);font-weight:800}.expiry-watch{color:var(--gold);font-weight:800}.masked{font-family:Consolas,monospace;letter-spacing:.5px}.secret-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:8px}.vault-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.category-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:14px;min-height:116px;cursor:pointer}.category-card h3{margin:0 0 8px;font-size:15px}.category-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}.category-card.active{border-color:#8b6fd8;background:#f3efff}.category-detail{border:1px solid var(--line);border-radius:8px;background:#fff;padding:16px}.category-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.category-detail h3{margin:0;font-size:16px}.mini-list{display:grid;gap:8px}.mini-item{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:10px}.mini-item strong{display:block;font-size:13px;margin-bottom:3px}.mini-item small{color:var(--muted)}@media (max-width:920px){.category-grid{grid-template-columns:1fr 1fr}.category-detail-head{align-items:flex-start;flex-direction:column}}.sop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sop-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:14px;min-height:168px}.sop-card h3{font-size:14px;margin:0 0 8px}.sop-card ol,.sop-card ul{margin:0 0 12px;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.55}.sop-card li{margin-bottom:3px}.sop-actions{display:flex;gap:8px;flex-wrap:wrap}.sop-search{display:grid;grid-template-columns:1fr auto auto;gap:10px}@media (max-width:920px){.sop-grid{grid-template-columns:1fr}.sop-search{grid-template-columns:1fr}}.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.note{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:14px;min-height:128px}.note h3{font-size:14px;margin:0 0 8px}.note p{margin:0 0 12px;color:var(--muted);line-height:1.55;font-size:13px}.finance-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.bars{display:grid;gap:12px}.bar-line{display:grid;gap:6px}.bar-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.bar{height:10px;background:#edf1f3;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:var(--green);border-radius:inherit}.practice-day.done small{font-weight:800;font-size:15px;color:var(--text)}.practice-day.missed{background:var(--soft-red);border-color:var(--red);color:var(--red)}.practice-day.missed strong,.practice-day.missed small{color:var(--red);font-weight:800}.summary-table .days-count{color:var(--green);font-weight:800}.summary-table .questions-count{color:var(--green);font-weight:800}.tag.purple{background:#efe8ff;color:#5a45a1}.volume-bar i.zero{background:transparent}.volume-bar i.partial{background:var(--gold)}.volume-bar i.complete{background:var(--green)}.done-count{font-weight:800;font-size:15px;color:var(--text)}.today-input{max-width:76px;padding:7px 8px;text-align:center}.volume-cell{min-width:150px}.volume-bar{height:12px;background:#edf1f3;border-radius:999px;overflow:hidden}.volume-bar i{display:block;height:100%;border-radius:999px;background:#8b6fd8}.volume-label{display:block;margin-top:5px;font-size:12px;color:var(--muted)}.practice-day.done small{font-weight:800;font-size:15px;color:var(--text)}.practice-day.done{box-shadow:inset 0 0 0 1px rgba(88,61,171,.16)}.practice-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.practice-day,.practice-weekday{min-height:64px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fbfcfd;font-size:13px}.practice-weekday{min-height:auto;background:transparent;border:0;color:var(--muted);text-align:center}.practice-day.done{background:#efe8ff;border-color:#8b6fd8;color:#3b257c}.practice-day.done strong{display:block;color:#3b257c}.practice-day small{display:block;margin-top:6px;color:var(--muted)}.practice-day.done small{color:#5a45a1}.practice-day.empty{opacity:.45}.month-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}.month-stat{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:10px}.month-stat span{display:block;color:var(--muted);font-size:12px}.month-stat strong{display:block;margin-top:4px;font-size:18px}@media (max-width:920px){.month-stats{grid-template-columns:1fr}.practice-day{min-height:58px;padding:6px;font-size:12px}}.today-highlight{border:2px solid #8b6fd8;background:#f3efff;box-shadow:0 0 0 3px rgba(139,111,216,.18)}.asset-year-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:12px}.asset-year-card span{display:block;color:var(--muted);font-size:12px}.asset-year-card strong{display:block;margin-top:4px;font-size:18px}.asset-year-card.current{border-color:#8b6fd8;background:#f3efff}.keyword-cloud{display:flex;gap:8px;flex-wrap:wrap}.keyword-cloud span{border-radius:999px;padding:6px 10px;background:#eef2f4;color:var(--ink);font-size:12px;font-weight:700}.hot-list{margin:0;padding-left:20px;line-height:1.7}.hot-list li{font-size:13px;margin-bottom:3px}.stock-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.year-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.year-chart{display:grid;gap:10px}.year-bar-row{display:grid;grid-template-columns:72px 1fr 90px;gap:10px;align-items:center;font-size:13px}.year-bar{height:12px;background:#edf1f3;border-radius:999px;overflow:hidden}.year-bar i{display:block;height:100%;border-radius:999px}.reminder-note{display:inline-block;margin-top:6px;padding:3px 6px;border-radius:6px;background:#fff1b8;color:#111;font-weight:800}.account-actions{display:flex;gap:8px;margin-top:12px}.editable-date{border:1px solid var(--line);border-radius:6px;padding:6px 7px;font:inherit;max-width:145px}.tax-note{background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:12px}.tax-note strong{display:block;margin-bottom:4px}@media (max-width:920px){.year-overview{grid-template-columns:1fr 1fr}.year-bar-row{grid-template-columns:1fr}.account-actions{flex-wrap:wrap}}.cash-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.cash-day,.cash-weekday{min-height:78px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fbfcfd;font-size:13px}.cash-weekday{min-height:auto;background:transparent;border:0;color:var(--muted);text-align:center}.cash-day strong{display:block;margin-bottom:6px}.cash-in{color:var(--green);font-weight:800}.cash-out{color:var(--red);font-weight:800}.cash-neutral{color:var(--muted)}.finance-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.finance-summary .month-stat strong{font-size:17px}.reminder-row{display:grid;grid-template-columns:1.1fr .8fr .8fr auto;gap:10px;align-items:center}.reminder-pill{border-radius:6px;padding:4px 7px;font-size:12px;background:#efe8ff;color:#5a45a1;white-space:nowrap}.reminder-pill.red{background:var(--soft-red);color:var(--red)}.reminder-pill.gold{background:var(--soft-gold);color:var(--gold)}@media (max-width:920px){.finance-summary{grid-template-columns:1fr 1fr}.cash-day{min-height:70px;padding:6px}.reminder-row{grid-template-columns:1fr}}.account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.account-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:14px}.account-card h3{margin:0 0 10px;font-size:15px}.account-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}.account-line:first-of-type{border-top:0}.finance-tabs{display:flex;gap:8px;flex-wrap:wrap}.rate-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.news-list{display:grid;gap:10px}.news-item{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfcfd}.news-item strong{display:block;font-size:13px;margin-bottom:4px}.news-item small{color:var(--muted)}.deposit-warning{color:var(--gold);font-weight:700}@media (max-width:920px){.account-grid{grid-template-columns:1fr}.rate-switch{align-items:flex-start}}.goal-input{max-width:72px;padding:7px 8px;text-align:center}.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.check-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:10px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.check-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--soft-green);color:var(--green);font-weight:800}.check-card.pending .check-dot{background:#eef2f4;color:#8c989f}.check-card strong{font-size:13px}.check-card small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.tally{font-family:Georgia,serif;font-weight:800;color:var(--ink);letter-spacing:1px}.summary-table td:nth-child(3){font-size:16px}.summary-table .done-mark{color:var(--green);font-weight:800}@media (max-width:920px){.check-grid{grid-template-columns:1fr}}.priority-row td{background:#fff8e8}.priority-row td:first-child{border-left:4px solid var(--gold)}.priority-badge{display:inline-block;border-radius:6px;padding:4px 7px;font-size:12px;background:var(--soft-gold);color:var(--gold);font-weight:700}.priority-badge.mid{background:var(--soft-blue);color:var(--blue)}.priority-badge.low{background:#eef2f4;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--muted);font-weight:600}td:last-child,th:last-child{text-align:right}.schema{font-size:13px;line-height:1.7;color:var(--muted)}.schema strong{color:var(--text)}@media (max-width:920px){.app{grid-template-columns:1fr}aside{position:sticky;top:0;z-index:10;padding:12px}.brand,.sidebar-foot{display:none}nav{display:flex;overflow-x:auto}.nav-item{flex:0 0 auto}main{padding:18px}.topbar{align-items:flex-start;flex-direction:column}.quick{justify-content:flex-start}.span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}.notes,.finance-grid{grid-template-columns:1fr}.form{grid-template-columns:1fr}}
+  </style>
+
+  <style id="premium-polish">
+    :root {
+      --bg: #f4f1ec;
+      --panel: rgba(255,255,255,.88);
+      --text: #202421;
+      --muted: #72766f;
+      --line: #ded8ce;
+      --green: #2f7d62;
+      --blue: #355f83;
+      --gold: #b5842c;
+      --red: #b45c58;
+      --ink: #24302d;
+      --soft-green: #e8f2ee;
+      --soft-blue: #e8eef4;
+      --soft-gold: #f7eedc;
+      --soft-red: #f7e8e5;
+      --shadow: 0 16px 36px rgba(54, 48, 38, .08);
+      --shadow-soft: 0 8px 20px rgba(54, 48, 38, .06);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(181,132,44,.12), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(47,125,98,.10), transparent 30%),
+        linear-gradient(180deg, #f7f4ef 0%, #eee9e1 100%);
+    }
+
+    aside {
+      background: linear-gradient(180deg, #1f2a27 0%, #141b19 100%);
+      border-right: 1px solid rgba(255,255,255,.08);
+      box-shadow: 10px 0 30px rgba(31,42,39,.12);
+    }
+
+    .mark {
+      background: linear-gradient(135deg, #f0d27c, #86b79c 62%, #7d93b5);
+      color: #17201d;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 8px 18px rgba(0,0,0,.18);
+    }
+
+    .brand strong { letter-spacing: .2px; }
+    .brand span { color: #b9c2bd; }
+
+    .nav-item {
+      border: 1px solid transparent;
+      color: #c9d0cc;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.08);
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(240,210,124,.18), rgba(134,183,156,.14));
+      border-color: rgba(240,210,124,.26);
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    main { padding: 30px; }
+
+    .topbar {
+      padding: 2px 2px 10px;
+      border-bottom: 1px solid rgba(65,56,44,.08);
+      margin-bottom: 22px;
+    }
+
+    h1 { font-size: 26px; color: #202421; }
+    .sub { color: #767970; }
+
+    .panel,
+    .note,
+    .sop-card,
+    .category-card,
+    .category-detail,
+    .account-card,
+    .tax-note,
+    .news-item,
+    .time-box,
+    .month-stat,
+    .asset-year-card,
+    .vault-section,
+    .life-day,
+    .cash-day,
+    .practice-day {
+      background: rgba(255,255,255,.86);
+      border-color: rgba(104, 91, 70, .16);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(8px);
+    }
+
+    .panel {
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .panel:hover,
+    .category-card:hover,
+    .sop-card:hover,
+    .account-card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .section-head h2 {
+      color: #252b27;
+      font-size: 15px;
+      text-transform: none;
+    }
+
+    .chip {
+      background: #efe9df;
+      color: #6f685e;
+      border: 1px solid rgba(104,91,70,.12);
+      font-weight: 600;
+    }
+
+    button.primary,
+    button.secondary {
+      border-radius: 9px;
+      font-weight: 650;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #23302c, #3f5d52);
+      box-shadow: 0 10px 20px rgba(35,48,44,.18);
+    }
+
+    button.secondary {
+      background: rgba(255,255,255,.82);
+      border-color: rgba(104,91,70,.18);
+    }
+
+    button.primary:hover,
+    button.secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(54,48,38,.12);
+    }
+
+    input, select, textarea {
+      border-color: rgba(104,91,70,.18);
+      background: rgba(255,255,255,.92);
+      border-radius: 9px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid rgba(47,125,98,.18);
+      border-color: rgba(47,125,98,.48);
+    }
+
+    .row,
+    .mini-item,
+    .check-card,
+    .vault-section,
+    .account-card,
+    .tax-note,
+    .news-item {
+      border-radius: 9px;
+      border-color: rgba(104,91,70,.14);
+      background: rgba(255,255,255,.74);
+    }
+
+    .tag {
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,.45);
+    }
+
+    .tag.green { background: #e3f0e9; color: #2b745b; }
+    .tag.blue { background: #e5edf4; color: #315d80; }
+    .tag.gold { background: #f5ead2; color: #9a6f21; }
+    .tag.red { background: #f5e3df; color: #a64d4a; }
+    .tag.purple { background: #ece7f7; color: #6652a0; }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th {
+      background: #f3eee6;
+      color: #676056;
+      font-size: 12px;
+    }
+
+    th:first-child { border-top-left-radius: 8px; }
+    th:last-child { border-top-right-radius: 8px; }
+    td { border-bottom-color: rgba(104,91,70,.12); }
+
+    .metric strong,
+    .month-stat strong,
+    .asset-year-card strong {
+      color: #222925;
+      letter-spacing: .1px;
+    }
+
+    .bar,
+    .year-bar,
+    .volume-bar {
+      background: #e8e1d7;
+    }
+
+    .memo-hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(236,231,247,.88) 45%, rgba(232,242,238,.9));
+      border-color: rgba(102,82,160,.20);
+      box-shadow: var(--shadow);
+    }
+
+    .time-box.primary-time,
+    .today-highlight,
+    .asset-year-card.current,
+    .category-card.active {
+      background: linear-gradient(135deg, #f6f1ff, #fffdf8);
+      border-color: rgba(102,82,160,.34);
+    }
+
+    .today-alert {
+      background: linear-gradient(135deg, #f8e6e1, #fff6ef);
+      border-color: rgba(180,92,88,.34);
+      color: #8f3936;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .reminder-note {
+      background: linear-gradient(135deg, #ffe8a8, #fff3c9);
+      color: #2a251a;
+      border: 1px solid rgba(181,132,44,.25);
+    }
+
+    .cash-day,
+    .life-day,
+    .practice-day {
+      box-shadow: none;
+    }
+
+    .cash-day:hover,
+    .life-day:hover,
+    .practice-day:hover {
+      box-shadow: var(--shadow-soft);
+      transform: translateY(-1px);
+    }
+
+    .life-day.au-holiday,
+    .priority-row td {
+      background: #fff7e5;
+    }
+
+    .life-day.cn-holiday,
+    .practice-day.missed {
+      background: #f8e8e4;
+    }
+
+    .cash-in,
+    .questions-count,
+    .days-count { color: #2f7d62; }
+    .cash-out,
+    .expiry-soon { color: #b45c58; }
+
+    .category-grid,
+    .sop-grid,
+    .account-grid,
+    .grid {
+      gap: 18px;
+    }
+
+    .category-card,
+    .sop-card,
+    .account-card {
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .category-card:hover,
+    .sop-card:hover,
+    .account-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47,125,98,.28);
+    }
+
+    .layout-note {
+      background: rgba(246,241,255,.82);
+      border-color: rgba(102,82,160,.24);
+      color: #4e4272;
+    }
+
+    @media (max-width: 920px) {
+      main { padding: 18px; }
+      aside { box-shadow: 0 8px 24px rgba(31,42,39,.16); }
+      .panel { padding: 15px; }
+    }
+  </style>
+
+  <style id="clock-contrast-fix">
+    .clock-screen {
+      background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(243,239,255,.88) 48%, rgba(232,242,238,.9));
+      color: var(--text);
+      border: 1px solid rgba(104,91,70,.16);
+    }
+    .clock-screen:before {
+      background: radial-gradient(circle, rgba(181,132,44,.18), transparent 32%);
+    }
+    .clock-title span,
+    .clock-box span,
+    .clock-box small {
+      color: var(--muted);
+    }
+    .clock-box {
+      background: rgba(255,255,255,.72);
+      border-color: rgba(104,91,70,.16);
+    }
+    .clock-box strong {
+      color: #111714;
+    }
+  </style>
+  <style id="pomodoro-polish">
+    .calendar-super-head { align-items: flex-start; }
+    .calendar-heading-stack { display: grid; gap: 10px; }
+    .pomodoro-widget {
+      min-width: 320px;
+      border: 1px solid rgba(181,132,44,.26);
+      border-radius: 14px;
+      padding: 14px;
+      background: linear-gradient(135deg, #fff8e8, #f3efff);
+      box-shadow: 0 16px 36px rgba(54,48,38,.10);
+    }
+    .pomodoro-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .pomodoro-top strong { font-size: 14px; color: var(--ink); }
+    .pomodoro-display {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 850;
+      color: #1c241f;
+      letter-spacing: .5px;
+      margin: 8px 0 10px;
+    }
+    .pomodoro-task {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .pomodoro-task input { min-width: 0; }
+    .pomodoro-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .duration-input {
+      max-width: 82px;
+      padding: 7px 8px;
+      text-align: center;
+    }
+    @media (max-width: 920px) {
+      .calendar-super-head { flex-direction: column; }
+      .pomodoro-widget { min-width: 0; width: 100%; }
+      .pomodoro-display { font-size: 30px; }
+    }
+  </style>
+  <style id="black-gold-purple-dashboard">
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --text: #20242a;
+      --muted: #6f7680;
+      --line: rgba(37, 42, 50, .12);
+      --green: #24765b;
+      --blue: #335f8d;
+      --gold: #b98422;
+      --red: #b9504b;
+      --ink: #20242a;
+      --soft-green: #e7f3ee;
+      --soft-blue: #e8f0f8;
+      --soft-gold: #f7eedc;
+      --soft-red: #f8e8e5;
+      --purple: #7457c8;
+      --purple-soft: #f0ebff;
+      --shadow: 0 22px 54px rgba(31, 36, 48, .12);
+      --shadow-soft: 0 10px 24px rgba(31, 36, 48, .08);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 0%, rgba(116, 87, 200, .10), transparent 30%),
+        radial-gradient(circle at 86% 4%, rgba(185, 132, 34, .12), transparent 28%),
+        linear-gradient(135deg, #fbfcff 0%, #f2f4f8 55%, #ffffff 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1500px;
+      margin: 28px auto;
+      min-height: calc(100vh - 56px);
+      border: 1px solid rgba(232, 196, 106, .20);
+      border-radius: 28px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .82);
+      box-shadow: 0 36px 90px rgba(31, 36, 48, .16);
+    }
+
+    aside {
+      background: linear-gradient(180deg, #ffffff 0%, #f5f3fb 100%);
+      border-right: 1px solid rgba(37, 42, 50, .10);
+      box-shadow: none;
+    }
+
+    .brand strong,
+    h1,
+    .section-head h2,
+    .metric strong,
+    .month-stat strong,
+    .asset-year-card strong,
+    .row strong,
+    .note h3,
+    .sop-card h3,
+    .category-card h3,
+    .account-card h3,
+    .vault-section h3 {
+      color: #20242a;
+    }
+
+    .brand span,
+    .sub,
+    .metric span,
+    .row small,
+    .note p,
+    .category-card p,
+    .time-date small,
+    .schema,
+    .volume-label,
+    .bar-meta,
+    .month-stat span,
+    .asset-year-card span,
+    .cash-neutral,
+    .lunar {
+      color: #6f7680;
+    }
+
+    .mark {
+      background: linear-gradient(135deg, #d8fff2 0%, #f1cb75 54%, #b7a2ff 100%);
+      box-shadow: 0 10px 24px rgba(116, 87, 200, .18);
+    }
+
+    .nav-item {
+      color: #606875;
+      border-radius: 14px;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(116, 87, 200, .13), rgba(185, 132, 34, .10));
+      border-color: rgba(116, 87, 200, .22);
+      color: #211d32;
+    }
+
+    main {
+      background:
+        radial-gradient(circle at 74% 0%, rgba(116, 87, 200, .08), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(246,248,252,.88));
+    }
+
+    .topbar {
+      border-bottom-color: rgba(37, 42, 50, .08);
+    }
+
+    .panel,
+    .note,
+    .sop-card,
+    .category-card,
+    .category-detail,
+    .account-card,
+    .tax-note,
+    .news-item,
+    .time-box,
+    .month-stat,
+    .asset-year-card,
+    .vault-section,
+    .life-day,
+    .cash-day,
+    .practice-day,
+    .row,
+    .mini-item,
+    .check-card {
+      background: rgba(255, 255, 255, .90);
+      border-color: rgba(37, 42, 50, .11);
+      box-shadow: var(--shadow-soft);
+      color: var(--text);
+    }
+
+    .panel {
+      border-radius: 18px;
+    }
+
+    .panel:hover,
+    .category-card:hover,
+    .sop-card:hover,
+    .account-card:hover {
+      border-color: rgba(116, 87, 200, .28);
+      box-shadow: var(--shadow);
+    }
+
+    .chip {
+      background: #f0eef8;
+      color: #60536f;
+      border-color: rgba(116, 87, 200, .12);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #2d3440, #7457c8);
+      color: #ffffff;
+      box-shadow: 0 14px 28px rgba(116, 87, 200, .22);
+    }
+
+    button.secondary {
+      background: #ffffff;
+      color: #2f3540;
+      border-color: rgba(37, 42, 50, .12);
+    }
+
+    input,
+    select,
+    textarea {
+      background: #ffffff;
+      border-color: rgba(37, 42, 50, .14);
+      color: var(--text);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #9aa0aa;
+    }
+
+    th {
+      background: #f1f3f7;
+      color: #687080;
+    }
+
+    td {
+      border-bottom-color: rgba(37, 42, 50, .09);
+      color: var(--text);
+    }
+
+    .tag.green { background: #e7f3ee; color: #24765b; }
+    .tag.blue { background: #e8f0f8; color: #335f8d; }
+    .tag.gold { background: #f7eedc; color: #946516; }
+    .tag.red { background: #f8e8e5; color: #a64540; }
+    .tag.purple { background: #f0ebff; color: #7457c8; }
+
+    .clock-screen,
+    .memo-hero,
+    .time-box.primary-time,
+    .today-highlight,
+    .asset-year-card.current,
+    .asset-year-card.current-red,
+    .category-card.active {
+      background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(240,235,255,.88));
+      border-color: rgba(116, 87, 200, .28);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .clock-box {
+      background: rgba(255, 255, 255, .76);
+      border-color: rgba(37, 42, 50, .12);
+    }
+
+    .clock-box span {
+      color: #7457c8;
+      font-weight: 850;
+    }
+
+    .clock-box strong {
+      color: #171b22;
+      text-shadow: none;
+    }
+
+    .clock-box small,
+    .clock-title span {
+      color: #6f7680;
+    }
+
+    .pomodoro-widget {
+      background: linear-gradient(135deg, rgba(247, 238, 220, .96), rgba(240, 235, 255, .96));
+      border-color: rgba(185, 132, 34, .22);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .pomodoro-display {
+      color: #171b22;
+      text-shadow: none;
+    }
+
+    .life-day.today,
+    .practice-day.done,
+    .cash-day.today-highlight {
+      background: linear-gradient(135deg, rgba(240, 235, 255, .96), rgba(247, 238, 220, .90));
+      border-color: rgba(116, 87, 200, .34);
+    }
+
+    .life-day.au-holiday,
+    .priority-row td {
+      background: #fff7e5;
+    }
+
+    .life-day.cn-holiday,
+    .practice-day.missed,
+    .today-alert {
+      background: #f8e8e5;
+      border-color: rgba(185, 80, 75, .24);
+    }
+
+    .event-chip.project,
+    .layout-note {
+      background: #f0ebff;
+      color: #7457c8;
+      border-color: rgba(116, 87, 200, .18);
+    }
+
+    .event-chip.au,
+    .reminder-note {
+      background: #f7eedc;
+      color: #946516;
+      border-color: rgba(185, 132, 34, .18);
+    }
+
+    .bar,
+    .year-bar,
+    .volume-bar {
+      background: #e7eaf0;
+    }
+
+    .cash-in,
+    .questions-count,
+    .days-count {
+      color: #24765b;
+    }
+
+    .cash-out,
+    .expiry-soon {
+      color: #b9504b;
+    }
+
+    .fx-main,
+    .fx-mini {
+      background: #ffffff;
+      border-color: rgba(37, 42, 50, .11);
+    }
+
+    .fx-main strong,
+    .fx-mini strong {
+      color: #20242a;
+    }
+
+    .secret-note,
+    .news-item small {
+      color: var(--muted);
+    }
+
+    .memo-note-input,
+    .goal-input,
+    .today-input,
+    .duration-input,
+    .editable-date {
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .sidebar-foot {
+      border-top-color: rgba(37, 42, 50, .10);
+      color: #747b86;
+    }
+
+    @media (max-width: 920px) {
+      .app {
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+      }
+    }
+  </style>
+  <style id="home-top-layout-polish">
+    .home-clock { grid-column: span 7; }
+    .home-quick { grid-column: span 5; }
+    .home-quick textarea { min-height: 156px; }
+    .inbox-hint { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 920px) {
+      .home-clock, .home-quick { grid-column: span 12; }
+    }
+  </style>
+  <style id="weather-strip-polish">
+    .weather-strip {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .weather-now {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 10px;
+      border: 1px solid rgba(37,42,50,.10);
+      border-radius: 12px;
+      background: rgba(255,255,255,.72);
+    }
+    .weather-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #f7eedc, #f0ebff);
+      color: #7457c8;
+      font-size: 17px;
+      font-weight: 900;
+    }
+    .weather-now strong {
+      display: block;
+      color: var(--text);
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .weather-now span,
+    .weather-card span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .weather-temp {
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--ink);
+      white-space: nowrap;
+      grid-column: 1 / -1;
+    }
+    .weather-week {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .weather-card {
+      flex: 0 0 88px;
+      padding: 8px 7px;
+      border: 1px solid rgba(37,42,50,.10);
+      border-radius: 10px;
+      background: rgba(255,255,255,.66);
+      min-height: 64px;
+      display: grid;
+      align-content: space-between;
+      gap: 4px;
+    }
+    .weather-card strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+    .weather-card b {
+      color: #7457c8;
+      font-size: 14px;
+    }
+    @media (max-width: 920px) {
+      .weather-card { flex-basis: 96px; }
+      .weather-strip { grid-template-columns: 1fr; }
+      .weather-now { grid-template-columns: auto 1fr; }
+      .weather-temp { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app"><aside><div class="brand"><div class="mark">A</div><div><strong>我的助手</strong><span>日程 · 灵感 · 钱包</span></div></div><nav aria-label="主导航"><button class="nav-item active" data-view="home">⌂ 今日</button><button class="nav-item" data-view="calendar">□ 日程</button><button class="nav-item" data-view="goal">◎ 目标</button><button class="nav-item" data-view="finance">¥ 理财</button><button class="nav-item" data-view="memo">✓ 大脑SOP</button><button class="nav-item" data-view="ideas">✎ 灵感</button><button class="nav-item" data-view="plan">▦ 方案</button></nav><div class="sidebar-foot">V1 目标：快速记录、每天回顾、看清现金流和资产变化。</div></aside>
+  <main><div class="topbar"><div><h1 id="view-title">今天的控制台</h1><p class="sub" id="view-sub">把今天要做的事、突然冒出的想法、花出去的钱放在一个地方。</p></div><div class="quick"><button class="secondary">快速记一笔</button><button class="secondary">写下想法</button><button class="primary">新增日程</button></div></div>
+  <section class="view active" id="home"><div class="grid"><div class="panel home-clock clock-screen"><div class="clock-content"><div class="clock-title"><span>今日时间屏幕 · 以澳洲时间为主</span><div class="clock-actions"><button class="secondary">更换背景</button><button class="secondary">自定义时钟</button><span>自动对比文字</span></div></div><div class="clock-times"><div class="clock-box"><span>澳洲 Adelaide</span><strong id="current-time-au">14:30:00</strong><small>2026 年 6 月 6 日 星期六 · 农历 丙午年 四月廿一</small></div><div class="clock-box"><span>中国 Beijing</span><strong id="current-time-cn">13:00:00</strong><small>2026 年 6 月 6 日 星期六</small></div><div class="weather-strip"><div class="weather-now"><div class="weather-icon">☔</div><div><strong>今日天气 · Adelaide</strong><span>Showers · 适合带伞，出门前看一下风和降雨</span></div><div class="weather-temp">11° / 20°</div></div><div class="weather-week"><div class="weather-card"><strong>今天</strong><span>阵雨</span><b>11° / 20°</b></div><div class="weather-card"><strong>周日</strong><span>多云</span><b>10° / 19°</b></div><div class="weather-card"><strong>周一</strong><span>小雨</span><b>9° / 18°</b></div><div class="weather-card"><strong>周二</strong><span>多云</span><b>8° / 17°</b></div><div class="weather-card"><strong>周三</strong><span>晴间多云</span><b>9° / 18°</b></div><div class="weather-card"><strong>周四</strong><span>阵雨</span><b>10° / 19°</b></div><div class="weather-card"><strong>周五</strong><span>多云</span><b>11° / 20°</b></div></div></div></div></div></div><div class="panel home-quick"><div class="section-head"><h2>快速记录</h2><span class="chip">保存到灵感收件箱</span></div><textarea id="quick-idea-input" placeholder="随时记：想法、灵感、碎碎念、待整理内容……"></textarea><div style="height:10px"></div><button class="primary" id="quick-idea-save">保存到收件箱</button><div class="inbox-hint">保存后会出现在“灵感”页，之后可以再分类整理。</div></div><div class="panel span-12"><div class="section-head"><h2>AUD / CNY 今日汇率</h2><span class="chip">联网后自动更新</span></div><div class="fx-card"><div class="fx-main"><span>今日汇率</span><strong>1 AUD = 4.68 CNY</strong><small>示例数据 · 正式版取实时汇率</small></div><div class="fx-mini"><span>7 日最低</span><strong>4.61</strong></div><div class="fx-mini"><span>1 月最低</span><strong>4.55</strong></div><div class="fx-mini"><span>今年最低</span><strong>4.42</strong></div></div></div><div class="panel span-3 metric"><span>今日日程</span><strong>5</strong><span>下一项 14:30</span></div><div class="panel span-3 metric"><span>目标进度</span><strong>72%</strong><span>PTE 已刷 68 / 94 题</span></div><div class="panel span-3 metric"><span>本月支出</span><strong>A$2,130</strong><span>含房租和 Amex</span></div><div class="panel span-3 metric"><span>资产净值</span><strong>A$86,420</strong><span>较年初上升</span></div><div class="panel span-7"><div class="section-head"><h2>今天</h2><span class="chip">来自日程 + 理财提醒 + 随手记</span></div><div class="list"><div class="today-alert">今天要交房租 A$1,000 <span class="today-source">来源：理财提醒 · 每两周一次</span></div><div class="row"><span class="time">09:30</span><div><strong>整理本周计划</strong><small>来源：日程 · 工作 · 30 分钟</small></div><span class="tag blue">日程</span></div><div class="row"><span class="time">14:30</span><div><strong>复盘投资组合</strong><small>来源：日程 · 理财 · 看持仓和现金比例</small></div><span class="tag gold">理财</span></div><div class="row"><span class="time">20:00</span><div><strong>PTE：WFD + RS</strong><small>来源：目标 · 今日刷题计划</small></div><span class="tag green">目标</span></div><div class="row"><span class="time">随手</span><div><strong>面膜</strong><small>来源：日程生活记录</small></div><span class="tag blue">生活</span></div></div></div><div class="panel span-5"><div class="section-head"><h2>待办</h2><div class="todo-actions"><button class="secondary">编辑</button><button class="secondary">删除</button><button class="primary">添加</button></div></div><div class="list"><div class="row"><span class="time">高</span><div><strong>整理保险资料</strong><small>本周内完成</small></div><span class="tag red">重要</span></div><div class="row"><span class="time">中</span><div><strong>准备六月预算</strong><small>月底前</small></div><span class="tag gold">财务</span></div><div class="row"><span class="time">低</span><div><strong>整理书单</strong><small>空闲时</small></div><span class="tag blue">生活</span></div></div></div><div class="panel span-6"><div class="section-head"><h2>最近灵感</h2><span class="chip">3 条</span></div><div class="list"><div class="row"><span class="time">昨晚</span><div><strong>做一个“每周复盘模板”</strong><small>把日程、花费、情绪和收获自动汇总</small></div><span class="tag green">产品</span></div><div class="row"><span class="time">周四</span><div><strong>给投资页加目标资产比例</strong><small>现金、基金、股票、稳健资产分开看</small></div><span class="tag gold">理财</span></div></div></div></div></section><section class="view" id="calendar"><div class="grid"><div class="panel span-12"><div class="section-head calendar-super-head"><div class="calendar-heading-stack"><h2>生活总日历</h2><div class="legend"><span><i style="background:#fff8e8;border:1px solid #d8aa4a"></i>澳洲公共假日</span><span><i style="background:#f8e9e8;border:1px solid #d98985"></i>中国假日/节日</span><span><i style="background:#efe8ff"></i>项目/排班</span><span><i style="background:#e7f2ed"></i>生活记录</span></div></div><div class="pomodoro-widget"><div class="pomodoro-top"><strong>番茄时钟</strong><span class="chip">保存到日历</span></div><div class="pomodoro-display" id="pomodoro-display">25:00</div><div class="pomodoro-task"><input id="pomodoro-task" placeholder="当前任务，例如 PTE WFD / 写报告"><button class="secondary" id="pomodoro-save">保存</button></div><div class="pomodoro-actions"><button class="primary" id="pomodoro-start">开始</button><button class="secondary" id="pomodoro-pause">暂停</button><button class="secondary" id="pomodoro-reset">重置</button></div></div></div><div class="life-calendar"><div class="life-weekday">一</div><div class="life-weekday">二</div><div class="life-weekday">三</div><div class="life-weekday">四</div><div class="life-weekday">五</div><div class="life-weekday">六</div><div class="life-weekday">日</div><div class="life-day"><div class="life-top"><span class="life-date">1</span><span class="lunar">四月十六</span></div><div class="event-chip work">09:30 周计划</div><div class="event-chip project">项目：PTE 备考 20:00</div></div><div class="life-day"><div class="life-top"><span class="life-date">2</span><span class="lunar">四月十七</span></div><div class="event-chip project">工作排班：早班 8-16</div></div><div class="life-day"><div class="life-top"><span class="life-date">3</span><span class="lunar">四月十八</span></div><div class="event-chip life">健身 18:30</div></div><div class="life-day"><div class="life-top"><span class="life-date">4</span><span class="lunar">四月十九</span></div><div class="event-chip project">项目：理财整理</div></div><div class="life-day"><div class="life-top"><span class="life-date">5</span><span class="lunar">四月二十</span></div><div class="event-chip work">交房租提醒</div></div><div class="life-day today"><div class="life-top"><span class="life-date">6 今天</span><span class="lunar">四月廿一</span></div><div class="event-chip work">14:30 复盘投资组合</div><div class="event-chip project">PTE：WFD + RS</div><div class="event-chip note">面膜</div></div><div class="life-day"><div class="life-top"><span class="life-date">7</span><span class="lunar">四月廿二</span></div><div class="event-chip life">采购</div></div><div class="life-day au-holiday"><div class="life-top"><span class="life-date">8</span><span class="lunar">四月廿三</span></div><div class="event-chip au">澳洲：King's Birthday</div><div class="event-chip project">项目：休息/复盘</div></div><div class="life-day"><div class="life-top"><span class="life-date">9</span><span class="lunar">四月廿四</span></div><div class="event-chip work">电话费报销</div></div><div class="life-day"><div class="life-top"><span class="life-date">10</span><span class="lunar">四月廿五</span></div><div class="event-chip project">工作排班：晚班 14-22</div></div><div class="life-day"><div class="life-top"><span class="life-date">11</span><span class="lunar">四月廿六</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">12</span><span class="lunar">四月廿七</span></div><div class="event-chip work">还 Amex</div></div><div class="life-day"><div class="life-top"><span class="life-date">13</span><span class="lunar">四月廿八</span></div><div class="event-chip note">整理衣柜</div></div><div class="life-day"><div class="life-top"><span class="life-date">14</span><span class="lunar">四月廿九</span></div><div class="event-chip life">朋友聚餐</div></div><div class="life-day"><div class="life-top"><span class="life-date">15</span><span class="lunar">五月初一</span></div><div class="event-chip project">项目：PTE 模考</div></div><div class="life-day"><div class="life-top"><span class="life-date">16</span><span class="lunar">五月初二</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">17</span><span class="lunar">五月初三</span></div><div class="event-chip project">工作排班：早班 8-16</div></div><div class="life-day"><div class="life-top"><span class="life-date">18</span><span class="lunar">五月初四</span></div><div class="event-chip life">牙医预约</div></div><div class="life-day"><div class="life-top"><span class="life-date">19</span><span class="lunar">五月初五</span></div><div class="event-chip work">交房租提醒</div></div><div class="life-day cn-holiday"><div class="life-top"><span class="life-date">20</span><span class="lunar">五月初六</span></div><div class="event-chip cn">中国：端午假期示例</div></div><div class="life-day"><div class="life-top"><span class="life-date">21</span><span class="lunar">五月初七</span></div><div class="event-chip note">面膜</div></div><div class="life-day"><div class="life-top"><span class="life-date">22</span><span class="lunar">五月初八</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">23</span><span class="lunar">五月初九</span></div><div class="event-chip project">项目：理财月度更新</div></div><div class="life-day"><div class="life-top"><span class="life-date">24</span><span class="lunar">五月初十</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">25</span><span class="lunar">五月十一</span></div><div class="event-chip project">工作排班：休息</div></div><div class="life-day"><div class="life-top"><span class="life-date">26</span><span class="lunar">五月十二</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">27</span><span class="lunar">五月十三</span></div><div class="event-chip life">运动</div></div><div class="life-day"><div class="life-top"><span class="life-date">28</span><span class="lunar">五月十四</span></div></div><div class="life-day"><div class="life-top"><span class="life-date">29</span><span class="lunar">五月十五</span></div><div class="event-chip note">满月复盘</div></div><div class="life-day"><div class="life-top"><span class="life-date">30</span><span class="lunar">五月十六</span></div><div class="event-chip project">项目：下月计划</div></div></div></div><div class="panel span-12"><div class="section-head"><h2>添加到日历</h2><span class="chip">日程 / 项目 / 随手记</span></div><div class="calendar-tools"><input placeholder="标题，例如 面膜 / 上班 / PTE刷题"><input type="datetime-local"><select><option>日程安排</option><option>工作排班/项目时间</option><option>生活记录</option><option>财务提醒</option></select><button class="primary">添加</button></div></div><div class="panel span-12"><div class="schema"><strong>正式版说明：</strong>澳洲公共假日可以按州/领地显示，中国节假日和农历日期可自动生成；你添加的工作 schedule、项目时间、生活记录和随手记都会叠加在同一个日历里。</div></div></div></section><section class="view" id="ideas"><div class="grid"><div class="panel span-12"><div class="section-head"><h2>灵感池</h2><span class="chip">搜索 · 标签 · 回顾</span></div><div class="form"><input placeholder="搜索想法"><select><option>全部标签</option><option>产品</option><option>写作</option><option>生活</option><option>学习</option></select><button class="primary">新想法</button></div></div><div class="span-12 notes" id="ideas-list"><article class="note"><h3>周复盘自动生成</h3><p>把本周日程、消费、待办完成率和投资变化合成一页报告。</p><span class="tag green">产品</span></article><article class="note"><h3>一句话收件箱</h3><p>不判断类型，先记录，再由系统建议放到日程、备忘或记账。</p><span class="tag blue">体验</span></article><article class="note"><h3>投资目标提醒</h3><p>当现金比例低于目标时提示，而不是只展示盈亏。</p><span class="tag gold">理财</span></article></div></div></section>
+  <section class="view" id="memo"><div class="grid"><div class="memo-hero"><div><h2>外置大脑总控台</h2><p>把证件、账号、SOP、碎碎念和生活资料放在这里，少占用脑内缓存。</p></div><div class="panel span-12"><div class="section-head"><h2>个人知识分类</h2><span class="chip">分类里可随意记录 SOP / 清单 / 笔记</span></div><div class="layout-note">这里的分类、卡片和内容都可以新增、编辑、删除，也可以拖拽调整顺序。</div><div style="height:12px"></div><div class="edit-actions"><button class="primary">新增分类</button><button class="secondary">编辑分类</button><button class="secondary">删除分类</button><button class="secondary">自定义排版</button></div><div style="height:12px"></div><div class="category-grid"><article class="category-card active"><span class="drag-handle">拖拽</span><h3>玄学</h3><p>塔罗、八字、择日、仪式感、能量记录。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>旅游</h3><p>攻略、行李清单、签证、酒店、路线。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>工作</h3><p>排班、流程、模板、沟通话术。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>理财</h3><p>账户、报税、投资原则、保险资料。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>阅读</h3><p>读书方法、摘录、书单、行动清单。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>账号大全</h3><p>账号用途、续费、绑定邮箱、找回提示。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>杂事碎碎念</h3><p>临时想法、生活杂项、待整理内容。</p></article><article class="category-card"><span class="drag-handle">拖拽</span><h3>生活SOP</h3><p>化妆、美甲、出门、扫墓、K歌、麻将。</p></article></div></div><div class="panel span-12"><div class="category-detail"><div class="category-detail-head"><div><h3>生活SOP</h3><p class="sub">点进任意分类后，都可以像这里一样新增 SOP、清单、笔记和碎碎念。</p></div><div class="edit-actions"><button class="primary">新增内容</button><button class="secondary">编辑内容</button><button class="secondary">删除内容</button><button class="secondary">拖拽排序</button></div></div><div class="panel span-6"><div class="section-head"><h2>长期备忘</h2><span class="chip">证件 / 银行卡 / WiFi</span></div><div class="info-vault"><div class="vault-section"><h3>证件信息</h3><table class="vault-table"><thead><tr><th>证件</th><th>号码</th><th>有效期</th><th>提醒</th></tr></thead><tbody><tr><td>护照</td><td class="masked">E123****9</td><td><span class="expiry-watch">2027-03-18</span></td><td>提前 6 个月</td></tr><tr><td>驾照</td><td class="masked">D45****21</td><td><span class="expiry-soon">2026-08-05</span></td><td>即将续期</td></tr><tr><td>身份证</td><td class="masked">2101**********88</td><td>2031-11-20</td><td>提前 6 个月</td></tr></tbody></table><div class="vault-actions"><button class="secondary">新增证件</button><button class="secondary">编辑提醒</button></div></div><div class="vault-section"><h3>银行卡</h3><table class="vault-table"><thead><tr><th>银行</th><th>卡号</th><th>有效期</th><th>备注</th></tr></thead><tbody><tr><td>澳洲主卡</td><td class="masked">**** **** **** 4821</td><td><span class="expiry-watch">09/27</span></td><td><input class="memo-note-input" value="主力消费卡，账单日每月 12 日"></td></tr><tr><td>中国储蓄卡</td><td class="masked">**** **** **** 0926</td><td>长期有效</td><td><input class="memo-note-input" value="储蓄卡，常用转账"></td></tr><tr><td>澳门信用卡</td><td class="masked">**** **** **** 1188</td><td><span class="expiry-soon">07/26</span></td><td><input class="memo-note-input" value="澳门备用信用卡，注意 07/26 到期"></td></tr></tbody></table><div class="secret-note">备注可以记录用途、账单日、绑定服务或续期提醒；敏感信息建议正式版放进加密保险箱。</div><div class="vault-actions"><button class="secondary">新增银行卡</button><button class="secondary">到期提醒</button></div></div><div class="vault-section"><h3>WiFi 密码</h3><table class="vault-table"><thead><tr><th>地点</th><th>网络名</th><th>密码</th><th>备注</th></tr></thead><tbody><tr><td>家</td><td>Home_5G</td><td class="masked">••••••••••••••••</td><td>太长，常用</td></tr><tr><td>备用</td><td>Home_Guest</td><td class="masked">••••••••••</td><td>给客人</td></tr></tbody></table><div class="vault-actions"><button class="secondary">新增 WiFi</button><button class="secondary">显示/隐藏</button></div></div></div></div></div></section><section class="view" id="finance"><div class="grid"><div class="panel span-12"><div class="section-head"><h2>本月收支日历</h2><span class="chip">收支 + 财务提醒</span></div><div class="finance-summary"><div class="month-stat"><span>资产总览</span><strong>A$86,420</strong></div><div class="month-stat"><span>本月收入</span><strong class="cash-in">A$5,065</strong></div><div class="month-stat"><span>本月支出</span><strong class="cash-out">A$2,130</strong></div><div class="month-stat"><span>本月结余</span><strong>A$2,935</strong></div></div><div class="cash-calendar"><div class="cash-weekday">一</div><div class="cash-weekday">二</div><div class="cash-weekday">三</div><div class="cash-weekday">四</div><div class="cash-weekday">五</div><div class="cash-weekday">六</div><div class="cash-weekday">日</div><div class="cash-day"><strong>1</strong><div class="cash-in">+A$5,000 工资</div><div class="cash-out">-A$38 午餐</div></div><div class="cash-day"><strong>2</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>3</strong><div class="cash-out">-A$24 咖啡/交通</div></div><div class="cash-day"><strong>4</strong><div class="cash-out">-A$68 超市</div></div><div class="cash-day"><strong>5</strong><div class="cash-out">-A$1,000 房租</div><span class="reminder-note">交房租</span></div><div class="cash-day today-highlight"><strong>6 今天</strong><div class="cash-out">-A$42 晚餐</div><span class="reminder-note">检查 Amex</span></div><div class="cash-day"><strong>7</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>8</strong><div class="cash-out">-A$31 交通</div></div><div class="cash-day"><strong>9</strong><div class="cash-in">+A$65 电话费报销</div><span class="reminder-note">报销电话费</span></div><div class="cash-day"><strong>10</strong><div class="cash-out">-A$19 订阅</div></div><div class="cash-day"><strong>11</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>12</strong><div class="cash-out">-A$280 Amex还款</div><span class="reminder-note">还 Amex</span></div><div class="cash-day"><strong>13</strong><div class="cash-out">-A$56 外食</div></div><div class="cash-day"><strong>14</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>15</strong><div class="cash-out">-A$46 日用品</div></div><div class="cash-day"><strong>16</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>17</strong><div class="cash-out">-A$73 超市</div></div><div class="cash-day"><strong>18</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>19</strong><div class="cash-out">-A$1,000 房租</div><span class="reminder-note">交房租</span></div><div class="cash-day"><strong>20</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>21</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>22</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>23</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>24</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>25</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>26</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>27</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>28</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>29</strong><div class="cash-neutral">无记录</div></div><div class="cash-day"><strong>30</strong><div class="cash-neutral">无记录</div></div></div><div style="height:12px"></div><div class="form"><input placeholder="提醒事项，例如 还信用卡"><input type="date"><button class="primary">添加日历提醒</button></div></div><div class="panel span-12"><div class="section-head"><h2>资产总览</h2><div class="rate-switch"><span class="chip">今日汇率示例 CNY/AUD 0.214</span><button class="secondary">全部显示人民币</button><button class="primary">全部显示澳币</button></div></div><div class="account-grid"><div class="account-card"><h3>澳洲账户</h3><div class="account-line"><span>活期余额</span><strong>A$12,460</strong></div><div class="account-line"><span>定期余额</span><strong>A$18,000</strong></div><div class="account-line"><span>股票/基金</span><strong>A$24,800</strong></div><div class="account-actions"><button class="secondary">编辑</button><button class="secondary">删除</button></div></div><div class="account-card"><h3>中国大陆账户</h3><div class="account-line"><span>活期余额</span><strong>¥32,600</strong></div><div class="account-line"><span>定期余额</span><strong>¥80,000</strong></div><div class="account-line"><span>股票/基金</span><strong>¥46,300</strong></div><div class="account-actions"><button class="secondary">编辑</button><button class="secondary">删除</button></div></div><div class="account-card"><h3>澳门账户</h3><div class="account-line"><span>活期余额</span><strong>MOP$18,200</strong></div><div class="account-line"><span>定期余额</span><strong>MOP$60,000</strong></div><div class="account-line"><span>股票/基金</span><strong>MOP$12,500</strong></div><div class="account-actions"><button class="secondary">编辑</button><button class="secondary">删除</button></div></div></div><div style="height:12px"></div><button class="primary">新增账户</button></div><div class="panel span-12"><div class="section-head"><h2>股票/基金账户</h2><span class="chip">持仓可编辑 · 盈亏系统计算</span></div><table><thead><tr><th>市场</th><th>代码</th><th>持有量</th><th>成本</th><th>现价</th><th>今日盈亏</th><th>总盈亏</th></tr></thead><tbody><tr><td>澳洲</td><td><input class="goal-input" value="VAS"></td><td><input class="goal-input" value="120"></td><td><input class="goal-input" value="92.10"></td><td>A$96.40</td><td><span class="tag green">+A$84</span></td><td><span class="tag green">+A$516</span></td></tr><tr><td>美股</td><td><input class="goal-input" value="AAPL"></td><td><input class="goal-input" value="20"></td><td><input class="goal-input" value="172.00"></td><td>US$190.20</td><td><span class="tag red">-US$18</span></td><td><span class="tag green">+US$364</span></td></tr><tr><td>中国大陆</td><td><input class="goal-input" value="510300"></td><td><input class="goal-input" value="3000"></td><td><input class="goal-input" value="3.80"></td><td>¥4.12</td><td><span class="tag green">+¥96</span></td><td><span class="tag green">+¥960</span></td></tr><tr><td>港股</td><td><input class="goal-input" value="0700.HK"></td><td><input class="goal-input" value="100"></td><td><input class="goal-input" value="320.00"></td><td>HK$358.00</td><td><span class="tag green">+HK$420</span></td><td><span class="tag green">+HK$3,800</span></td></tr></tbody></table><div class="stock-actions"><button class="primary">新增股票/基金</button><button class="secondary">刷新行情</button></div></div><div class="panel span-6"><div class="section-head"><h2>每日记账</h2><span class="chip">每天可记，也可月底补录</span></div><table><thead><tr><th>日期</th><th>地区</th><th>类型</th><th>说明</th><th>金额</th></tr></thead><tbody><tr><td>06-01</td><td>澳洲</td><td>收入</td><td>工资</td><td class="cash-in">+A$5,000</td></tr><tr><td>06-05</td><td>澳洲</td><td>支出</td><td>房租</td><td class="cash-out">-A$1,000</td></tr><tr><td>06-09</td><td>澳洲</td><td>收入</td><td>电话费报销</td><td class="cash-in">+A$65</td></tr><tr><td>06-12</td><td>澳洲</td><td>支出</td><td>Amex 还款</td><td class="cash-out">-A$280</td></tr></tbody></table><div style="height:12px"></div><div class="form"><input type="date"><select><option>收入</option><option>支出</option><option>转账</option></select><button class="primary">新增一笔</button></div></div><div class="panel span-6"><div class="section-head"><h2>定期存款提醒</h2><span class="chip">利率 + 到期预估</span></div><table><thead><tr><th>账户</th><th>本金</th><th>年利率</th><th>到期日</th><th>预估到期</th></tr></thead><tbody><tr><td>澳洲定期</td><td>A$18,000</td><td><input class="goal-input" value="4.8">%</td><td><input class="editable-date" type="date" value="2026-11-20"></td><td>A$18,432</td></tr><tr><td>大陆定期</td><td>¥80,000</td><td><input class="goal-input" value="2.1">%</td><td><input class="editable-date" type="date" value="2026-09-18"></td><td>¥81,260</td></tr><tr><td>澳门定期</td><td>MOP$60,000</td><td><input class="goal-input" value="3.2">%</td><td><input class="editable-date" type="date" value="2026-07-08"></td><td>MOP$60,960</td></tr></tbody></table></div><div class="panel span-12"><div class="section-head"><h2>市场信息</h2><span class="chip">每日简报</span></div><div class="grid"><div class="panel span-4"><div class="section-head"><h2>今日热点</h2><span class="chip">Top 10</span></div><ol class="hot-list"><li>大型科技股成交活跃</li><li>AI 基础设施继续受关注</li><li>芯片板块波动加大</li><li>澳洲资源股跟随大宗商品</li><li>银行股关注利率预期</li><li>电动车产业链分化</li><li>医疗健康板块防御属性增强</li><li>黄金相关资产走强</li><li>中概股关注政策和财报</li><li>指数基金资金流入稳定</li></ol></div><div class="panel span-4"><div class="section-head"><h2>长期趋势关键词</h2><span class="chip">观察</span></div><div class="keyword-cloud"><span>AI</span><span>芯片</span><span>电车</span><span>云计算</span><span>新能源</span><span>医疗科技</span><span>黄金</span><span>半导体设备</span></div></div><div class="panel span-4"><div class="section-head"><h2>热门股票</h2><span class="chip">澳洲 / A股 / 港股 / 美股</span></div><table><thead><tr><th>市场</th><th>代码</th><th>原因</th></tr></thead><tbody><tr><td>澳洲</td><td>BHP</td><td><span class="tag gold">资源放量</span></td></tr><tr><td>澳洲</td><td>CBA</td><td><span class="tag blue">银行活跃</span></td></tr><tr><td>中国大陆</td><td>宁德时代</td><td><span class="tag green">电池关注</span></td></tr><tr><td>中国大陆</td><td>贵州茅台</td><td><span class="tag gold">大盘权重</span></td></tr><tr><td>港股</td><td>腾讯控股</td><td><span class="tag green">成交活跃</span></td></tr><tr><td>港股</td><td>小米集团</td><td><span class="tag red">涨跌波动</span></td></tr><tr><td>美股</td><td>NVDA</td><td><span class="tag green">AI/芯片</span></td></tr></tbody></table></div></div></div><div class="panel span-12"><div class="section-head"><h2>本财年退税记录</h2><span class="chip">Deduction tracker</span></div><div class="grid"><div class="tax-note span-3"><strong>ChatGPT Plus</strong><span>A$30/月 · 工作/学习工具</span></div><div class="tax-note span-3"><strong>电话费</strong><span>A$65/月 · 工作相关比例可记录</span></div><div class="tax-note span-3"><strong>网络费用</strong><span>A$80/月 · 居家办公比例</span></div><div class="tax-note span-3"><strong>办公设备/软件</strong><span>键盘、显示器、云服务等</span></div></div><div style="height:12px"></div><div class="form"><input placeholder="项目名称"><input placeholder="金额"><button class="primary">新增退税项目</button></div></div><div class="panel span-12"><div class="section-head"><h2>近五年资产对比</h2><span class="chip">可手动录入年度总资产</span></div><div class="year-overview"><div class="asset-year-card"><span>2022 年总资产</span><strong>A$42,000</strong></div><div class="asset-year-card"><span>2023 年总资产</span><strong>A$55,600</strong></div><div class="asset-year-card"><span>2024 年总资产</span><strong>A$68,900</strong></div><div class="asset-year-card"><span>2025 年总资产</span><strong>A$76,300</strong></div><div class="asset-year-card current-red"><span>2026 年总资产</span><strong>A$86,420</strong></div></div><div class="year-chart"><div class="year-bar-row"><span>2022</span><div class="year-bar"><i style="width:49%;background:#8b6fd8"></i></div><strong>A$42,000</strong></div><div class="year-bar-row"><span>2023</span><div class="year-bar"><i style="width:64%;background:#8b6fd8"></i></div><strong>A$55,600</strong></div><div class="year-bar-row"><span>2024</span><div class="year-bar"><i style="width:80%;background:#8b6fd8"></i></div><strong>A$68,900</strong></div><div class="year-bar-row"><span>2025</span><div class="year-bar"><i style="width:88%;background:#8b6fd8"></i></div><strong>A$76,300</strong></div><div class="year-bar-row"><span>2026</span><div class="year-bar"><i style="width:100%;background:var(--red)"></i></div><strong>A$86,420</strong></div></div><div style="height:12px"></div><div class="form"><input placeholder="年份"><input placeholder="年度总资产"><button class="primary">更新年度资产</button></div></div><div class="panel span-12"><div class="schema"><strong>正式版说明：</strong>所有页面模块都可以自定义排序、隐藏、添加和调整大小；汇率、股票现价、新闻和预测需要接入外部 API。</div></div></div></section><section class="view" id="goal"><div class="grid"><div class="panel span-3 metric"><span>当前目标</span><strong>PTE 备考</strong><span>目标分数 65+ · 预计 6 周</span></div><div class="panel span-3 metric"><span>完整题型</span><strong>22</strong><span>计分题型 · 另有自我介绍不计分</span></div><div class="panel span-3 metric"><span>今日完成</span><strong>72%</strong><span>已刷 68 / 94 题</span></div><div class="panel span-3 metric"><span>总进度</span><strong>38%</strong><span>距离模考还有 18 天</span></div><div class="panel span-12"><div class="section-head"><h2>总览 Summary</h2><span class="chip">月度打卡日历</span></div><div class="month-stats"><div class="month-stat"><span>本月已打卡</span><strong>13 天</strong></div><div class="month-stat"><span>本月累计刷题</span><strong>684 题</strong></div><div class="month-stat"><span>最高单日刷题</span><strong>82 题</strong></div></div><div class="practice-calendar"><div class="practice-weekday">一</div><div class="practice-weekday">二</div><div class="practice-weekday">三</div><div class="practice-weekday">四</div><div class="practice-weekday">五</div><div class="practice-weekday">六</div><div class="practice-weekday">日</div><div class="practice-day done"><strong>1</strong><small><span class="done-count">42 题</span></small></div><div class="practice-day done"><strong>2</strong><small><span class="done-count">58 题</span></small></div><div class="practice-day missed"><strong>3</strong><small>未打卡</small></div><div class="practice-day done"><strong>4</strong><small><span class="done-count">64 题</span></small></div><div class="practice-day done"><strong>5</strong><small><span class="done-count">51 题</span></small></div><div class="practice-day done"><strong>6</strong><small><span class="done-count">72 题</span></small></div><div class="practice-day missed"><strong>7</strong><small>未打卡</small></div><div class="practice-day done"><strong>8</strong><small><span class="done-count">48 题</span></small></div><div class="practice-day done"><strong>9</strong><small><span class="done-count">60 题</span></small></div><div class="practice-day done"><strong>10</strong><small><span class="done-count">39 题</span></small></div><div class="practice-day missed"><strong>11</strong><small>未打卡</small></div><div class="practice-day done"><strong>12</strong><small><span class="done-count">82 题</span></small></div><div class="practice-day done"><strong>13</strong><small><span class="done-count">45 题</span></small></div><div class="practice-day done"><strong>14</strong><small><span class="done-count">57 题</span></small></div><div class="practice-day missed"><strong>15</strong><small>未打卡</small></div><div class="practice-day done"><strong>16</strong><small><span class="done-count">53 题</span></small></div><div class="practice-day done"><strong>17</strong><small><span class="done-count">70 题</span></small></div><div class="practice-day missed"><strong>18</strong><small>未打卡</small></div><div class="practice-day missed"><strong>19</strong><small>未打卡</small></div><div class="practice-day missed"><strong>20</strong><small>未打卡</small></div><div class="practice-day missed"><strong>21</strong><small>未打卡</small></div><div class="practice-day missed"><strong>22</strong><small>未打卡</small></div><div class="practice-day missed"><strong>23</strong><small>未打卡</small></div><div class="practice-day missed"><strong>24</strong><small>未打卡</small></div><div class="practice-day missed"><strong>25</strong><small>未打卡</small></div><div class="practice-day missed"><strong>26</strong><small>未打卡</small></div><div class="practice-day missed"><strong>27</strong><small>未打卡</small></div><div class="practice-day missed"><strong>28</strong><small>未打卡</small></div><div class="practice-day missed"><strong>29</strong><small>未打卡</small></div><div class="practice-day missed"><strong>30</strong><small>未打卡</small></div></div><div style="height:16px"></div><div class="section-head"><h2>题型累计</h2><span class="chip">只显示累计刷题数</span></div><div style="overflow-x:auto"><table class="summary-table"><thead><tr><th>题型</th><th>累计打卡天数</th><th>累计刷题数</th><th>最近状态</th></tr></thead><tbody><tr><td>Read Aloud</td><td><span class="days-count">12 天</span></td><td><span class="questions-count">96 题</span></td><td><span class="tag purple">连续 4 天</span></td></tr><tr><td>Repeat Sentence</td><td><span class="days-count">10 天</span></td><td><span class="questions-count">200 题</span></td><td><span class="tag purple">连续 3 天</span></td></tr><tr><td>Describe Image</td><td><span class="days-count">6 天</span></td><td><span class="questions-count">36 题</span></td><td><span class="tag red">今日未达标</span></td></tr><tr><td>Retell Lecture</td><td><span class="days-count">8 天</span></td><td><span class="questions-count">24 题</span></td><td><span class="tag purple">连续 1 天</span></td></tr><tr><td>Summarize Written Text</td><td><span class="days-count">9 天</span></td><td><span class="questions-count">18 题</span></td><td><span class="tag purple">连续 1 天</span></td></tr><tr><td>Fill in the Blanks / Dropdown</td><td><span class="days-count">11 天</span></td><td><span class="questions-count">110 题</span></td><td><span class="tag purple">连续 5 天</span></td></tr><tr><td>Summarize Spoken Text</td><td><span class="days-count">7 天</span></td><td><span class="questions-count">7 题</span></td><td><span class="tag purple">连续 1 天</span></td></tr><tr><td>Write from Dictation</td><td><span class="days-count">13 天</span></td><td><span class="questions-count">156 题</span></td><td><span class="tag purple">连续 6 天</span></td></tr></tbody></table></div><div style="height:12px"></div><div class="schema"><strong>说明：</strong>紫色日期代表当天完成了 PTE 打卡，日期里加粗显示当天所有题型累计刷了多少题。下面的完整题型表可以直接编辑每日目标和今日已完成数量，横向条形图用来突出今天哪类题刷得最多。</div></div><div class="panel span-12"><div class="section-head"><h2>PTE做题量追踪表</h2><span class="chip">在表格里直接打卡</span></div><div style="overflow-x:auto"><table><thead><tr><th>模块</th><th>题型</th><th>官方题量</th><th>每日目标</th><th>今日已完成</th><th>用时记录</th><th>今日做题量</th><th>优先级</th></tr></thead><tbody><tr class="priority-row"><td>Speaking & Writing</td><td><strong>Read Aloud</strong></td><td>6-7</td><td><input class="goal-input" type="number" value="8"> 题</td><td><input class="today-input" type="number" value="8"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:40%"></i></div><span class="volume-label">今日 8 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr class="priority-row"><td>Speaking & Writing</td><td><strong>Repeat Sentence</strong></td><td>10-12</td><td><input class="goal-input" type="number" value="20"> 题</td><td><input class="today-input" type="number" value="20"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:100%"></i></div><span class="volume-label">今日 20 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Speaking & Writing</td><td>Describe Image</td><td>5-6</td><td><input class="goal-input" type="number" value="6"> 题</td><td><input class="today-input" type="number" value="3"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="partial" style="width:15%"></i></div><span class="volume-label">今日 3 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr class="priority-row"><td>Speaking & Writing</td><td><strong>Retell Lecture</strong></td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="3"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="partial" style="width:15%"></i></div><span class="volume-label">今日 3 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Speaking & Writing</td><td>Answer Short Question</td><td>5-6</td><td><input class="goal-input" type="number" value="15"> 题</td><td><input class="today-input" type="number" value="9"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="partial" style="width:45%"></i></div><span class="volume-label">今日 9 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr><td>Speaking & Writing</td><td>Summarize Group Discussion</td><td>2-3</td><td><input class="goal-input" type="number" value="2"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr><td>Speaking & Writing</td><td>Respond to a Situation</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr class="priority-row"><td>Speaking & Writing</td><td><strong>Summarize Written Text</strong></td><td>2</td><td><input class="goal-input" type="number" value="2"> 题</td><td><input class="today-input" type="number" value="2"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:10%"></i></div><span class="volume-label">今日 2 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Speaking & Writing</td><td>Write Essay</td><td>1</td><td><input class="goal-input" type="number" value="1"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr class="priority-row"><td>Reading</td><td><strong>Fill in the Blanks / Dropdown</strong></td><td>5-6</td><td><input class="goal-input" type="number" value="10"> 题</td><td><input class="today-input" type="number" value="10"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:50%"></i></div><span class="volume-label">今日 10 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Reading</td><td>Multiple Choice, Multiple Answers</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr><td>Reading</td><td>Reorder Paragraph</td><td>2-3</td><td><input class="goal-input" type="number" value="5"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr class="priority-row"><td>Reading</td><td><strong>Fill in the Blanks / Drag and Drop</strong></td><td>4-5</td><td><input class="goal-input" type="number" value="8"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Reading</td><td>Multiple Choice, Single Answer</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr class="priority-row"><td>Listening</td><td><strong>Summarize Spoken Text</strong></td><td>1</td><td><input class="goal-input" type="number" value="1"> 题</td><td><input class="today-input" type="number" value="1"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:5%"></i></div><span class="volume-label">今日 1 题</span></td><td><span class="priority-badge">重点</span></td></tr><tr><td>Listening</td><td>Multiple Choice, Multiple Answers</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr><td>Listening</td><td>Fill in the Blanks / Type In</td><td>2-3</td><td><input class="goal-input" type="number" value="5"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr><td>Listening</td><td>Highlight Correct Summary</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr><td>Listening</td><td>Multiple Choice, Single Answer</td><td>2-3</td><td><input class="goal-input" type="number" value="3"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr><td>Listening</td><td>Select Missing Word</td><td>1-2</td><td><input class="goal-input" type="number" value="2"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge low">低</span></td></tr><tr><td>Listening</td><td>Highlight Incorrect Words</td><td>2-3</td><td><input class="goal-input" type="number" value="5"> 题</td><td><input class="today-input" type="number" value="0"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="zero" style="width:100%"></i></div><span class="volume-label">今日 0 题</span></td><td><span class="priority-badge mid">中</span></td></tr><tr class="priority-row"><td>Listening</td><td><strong>Write from Dictation</strong></td><td>3-4</td><td><input class="goal-input" type="number" value="12"> 题</td><td><input class="today-input" type="number" value="12"> 题</td><td><input class="duration-input" type="number" value="0"> 分钟</td><td class="volume-cell"><div class="volume-bar"><i class="complete" style="width:60%"></i></div><span class="volume-label">今日 12 题</span></td><td><span class="priority-badge">重点</span></td></tr></tbody></table></div></div></div></section><section class="view" id="plan"><div class="grid"><div class="panel span-6"><div class="section-head"><h2>第一版功能清单</h2><span class="chip">MVP</span></div><div class="schema"><strong>首页：</strong>时间、日期、农历、今日概览、快速记录、月度支出、最近灵感。<br><strong>日程：</strong>生活总日历、公共假日、农历、工作排班、项目时间、随手记、提醒和重复规则。<br><strong>灵感：</strong>快速记录、标签、搜索、按日期回顾。<br><strong>大脑SOP：</strong>待办、证件/银行卡/WiFi、分类知识库、账号大全、碎碎念和生活 SOP。<br><strong>理财：</strong>近五年资产对比、每日收支日历、财务提醒、地区账户、汇率换算、定期存款、股票/基金、市场热点和退税记录。<br><strong>目标：</strong>大目标、子项目、每日计划、打卡和总览复盘。</div></div><div class="panel span-6"><div class="section-head"><h2>数据库结构</h2><span class="chip">SQLite</span></div><div class="schema"><strong>events：</strong>日程标题、开始/结束时间、提醒、重复规则。<br><strong>ideas：</strong>内容、标签、来源、创建时间。<br><strong>tasks：</strong>待办标题、优先级、截止日期、完成状态。<br><strong>notes：</strong>长期备忘、分类、正文。<br><strong>secure_items：</strong>证件、银行卡、WiFi、有效期、提醒日期、加密字段。<br><strong>knowledge_categories：</strong>玄学、旅游、工作、理财、阅读、账号大全、杂事碎碎念、生活SOP。<br><strong>sops：</strong>分类、标题、步骤、清单、笔记、标签、更新时间。<br><strong>accounts：</strong>地区、国家/地区、活期、定期、证券账户。<br><strong>daily_ledgers：</strong>日期、地区、类型、说明、金额、账户。<br><strong>finance_reminders：</strong>事项、金额、周期、提醒日期、提前提醒天数。<br><strong>tax_deductions：</strong>财年、项目、金额、用途比例、凭证。<br><strong>deposits：</strong>本金、利率、到期日、预估到期金额。<br><strong>holdings：</strong>股票代码、持有量、成本、现价、盈亏。<br><strong>goals：</strong>目标名称、考试日期、目标分数、周期。<br><strong>goal_items：</strong>题型、模块、官方题量、影响技能、每日目标数量、优先级。<br><strong>goal_checkins：</strong>日期、题型、计划数量、完成数量、刷题用时。</div></div><div class="panel span-12"><div class="section-head"><h2>开发计划</h2><span class="chip">4 周</span></div><div class="schema"><strong>第 1 周：</strong>完成界面、导航、数据模型、快速记录。<br><strong>第 2 周：</strong>完成日程、灵感、备忘和目标计划的增删改查。<br><strong>第 3 周：</strong>完成理财账户、月度记账、汇率换算和定期提醒。<br><strong>第 4 周：</strong>完成股票持仓、行情同步、市场信息、导出备份和桌面打包。<br><strong>后续：</strong>加入 AI 总结、自然语言录入、自动分类、提醒和页面自由排版。</div></div></div></section>
+  </main></div>
+  <script>const titles={home:["今天的控制台","把今天要做的事、突然冒出的想法、花出去的钱放在一个地方。"],calendar:["日程管理","查看今天、本周和未来安排，支持提醒与重复日程。"],ideas:["灵感与奇思妙想","快速记录、打标签、搜索，并在回顾时重新发现好点子。"],memo:["大脑SOP","把待办、证件资料、账号、生活 SOP 和碎碎念放进一个外置大脑。"],finance:["理财中心","合并记账、账户、汇率、定期存款和投资持仓。"],goal:["目标计划","把一个大目标拆成题型、每日任务、打卡记录和总览复盘。"],plan:["第一版软件方案","功能清单、数据库结构和开发计划放在这里，方便下一步正式开发。"]};function updateCurrentTime(){const au=document.getElementById("current-time-au");const cn=document.getElementById("current-time-cn");const now=new Date();if(au)au.textContent=new Intl.DateTimeFormat("zh-CN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZone:"Australia/Adelaide"}).format(now);if(cn)cn.textContent=new Intl.DateTimeFormat("zh-CN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZone:"Asia/Shanghai"}).format(now);}updateCurrentTime();setInterval(updateCurrentTime,1000);function setupPomodoro(){
+  const display=document.getElementById("pomodoro-display");
+  if(!display)return;
+  const taskInput=document.getElementById("pomodoro-task");
+  const startBtn=document.getElementById("pomodoro-start");
+  const pauseBtn=document.getElementById("pomodoro-pause");
+  const resetBtn=document.getElementById("pomodoro-reset");
+  const saveBtn=document.getElementById("pomodoro-save");
+  let total=25*60;
+  let remaining=total;
+  let timer=null;
+  const render=()=>{const m=String(Math.floor(remaining/60)).padStart(2,"0");const s=String(remaining%60).padStart(2,"0");display.textContent=m+":"+s;};
+  const stop=()=>{if(timer){clearInterval(timer);timer=null;}};
+  startBtn?.addEventListener("click",()=>{if(timer)return;timer=setInterval(()=>{remaining=Math.max(0,remaining-1);render();if(remaining===0)stop();},1000);});
+  pauseBtn?.addEventListener("click",stop);
+  resetBtn?.addEventListener("click",()=>{stop();remaining=total;render();});
+  saveBtn?.addEventListener("click",()=>{const task=(taskInput?.value||"未命名任务").trim();const used=Math.max(0,Math.round((total-remaining)/60));const today=document.querySelector(".life-day.today");if(today){const chip=document.createElement("div");chip.className="event-chip project";chip.textContent="番茄钟："+task+" · "+used+" 分钟";today.appendChild(chip);}stop();remaining=total;render();if(taskInput)taskInput.value="";});
+  render();
+}
+setupPomodoro();function setupQuickIdeaInbox(){
+  const input=document.getElementById("quick-idea-input");
+  const save=document.getElementById("quick-idea-save");
+  const list=document.getElementById("ideas-list");
+  if(!input||!save||!list)return;
+  save.addEventListener("click",()=>{
+    const text=input.value.trim();
+    if(!text)return;
+    const card=document.createElement("article");
+    card.className="note";
+    card.innerHTML="<h3>收件箱记录</h3><p>"+text.replace(/[&<>]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))+"</p><span class=\"tag purple\">Inbox</span>";
+    list.prepend(card);
+    input.value="";
+    save.textContent="已保存";
+    setTimeout(()=>save.textContent="保存到收件箱",1200);
+  });
+}
+setupQuickIdeaInbox();document.querySelectorAll(".nav-item").forEach(button=>{button.addEventListener("click",()=>{const id=button.dataset.view;document.querySelectorAll(".nav-item").forEach(item=>item.classList.remove("active"));document.querySelectorAll(".view").forEach(view=>view.classList.remove("active"));button.classList.add("active");document.getElementById(id).classList.add("active");document.getElementById("view-title").textContent=titles[id][0];document.getElementById("view-sub").textContent=titles[id][1];});});</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
